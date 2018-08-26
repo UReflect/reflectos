@@ -99,7 +99,7 @@ export class WatcherService {
   remove (name) {
     let idx = this.applications.findIndex(a => a.name === name)
     let app = this.applications[idx]
-    WatcherService.deleteFolderRecursive(`${apps.apps}/${app.name}.${app.version}/`)
+    WatcherService.deleteFolderRecursive(`${apps.apps}/${app.name}.${app.version}`)
     this.applications.splice(idx, 1)
   }
 
@@ -107,9 +107,9 @@ export class WatcherService {
     let name = application.split('.')[0]
     let version = application.split('.')[1]
 
-    if (name === 'shop') {
-      require('../../applications/apps/shop.v0-1/dist/store.umd.min')
-      require('../../applications/apps/shop.v0-1/dist/store.css')
+    if (name === 'store') {
+      require('../../applications/apps/store.v0-1/dist/store.umd.min')
+      require('../../applications/apps/store.v0-1/dist/store.css')
       Vue.component(name, window['store'])
     } else if (name === 'clockdate') {
       require('../../applications/apps/clockdate.v0-1/dist/Clockdate.umd')
