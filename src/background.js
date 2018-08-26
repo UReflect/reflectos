@@ -135,7 +135,7 @@ function downloadHandler () {
 }
 
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes(['app'], {secure: true})
+protocol.registerStandardSchemes(['ur'], {secure: true})
 
 function createMainWindow () {
   const window = new BrowserWindow({
@@ -159,7 +159,7 @@ function createMainWindow () {
     window.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) window.webContents.openDevTools()
   } else {
-    createProtocol('app')
+    createProtocol('ur')
     //   Load the index.html when not in development
     window.loadURL(
       formatUrl({
@@ -168,6 +168,7 @@ function createMainWindow () {
         slashes: true
       })
     )
+    window.webContents.openDevTools()
   }
 
   window.on('closed', () => {

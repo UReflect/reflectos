@@ -1,5 +1,7 @@
 #!/bin/sh
 
-npm install && npm run build:electron
-docker build -t reflectos/core -f .docker/Dockerfile .
-docker run -ti --rm --privileged -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/.Xauthority:/root/.Xauthority --net=host reflectos/core:latest
+rm -rf ./dist_electron
+yarn && yarn build:electron --linux dir
+cp -rf applications ./dist_electron/linux-unpacked
+docker build -t reflectos/core:local -f .docker/Dockerfile ./dist_electron/linux-unpacked
+docker run -ti --rm --privileged -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/.Xauthority:/root/.Xauthority --net=host reflectos/core:local
