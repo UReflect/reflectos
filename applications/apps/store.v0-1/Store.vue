@@ -14,12 +14,11 @@
 </template>
 
 <script>
-  import axios from "axios";
   import ListingModule from "./ListingModule.vue";
   import SingleModule from "./SingleModule.vue";
 
   export default {
-    name: 'Shop',
+    name: 'Store',
     components: {
       ListingModule,
       SingleModule
@@ -33,12 +32,11 @@
       }
     },
     mounted() {
-    },
+      },
     methods: {
       switchComp (comp) {
         this.dynamicComponent = comp[0];
         this.dynamicProps = {'module_id': comp[1]};
-        console.log(comp);
       }
     },
   }

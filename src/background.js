@@ -1,12 +1,13 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, TouchBar } from 'electron'
+import {app, protocol, BrowserWindow, TouchBar, ipcMain} from 'electron'
 import * as path from 'path'
-import { format as formatUrl } from 'url'
+import {format as formatUrl} from 'url'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
@@ -119,8 +120,23 @@ const touchBar = new TouchBar([
   result
 ])
 
+const {download} = require('electron-dl')
+
+function downloadHandler () {
+  ipcMain.on('download-module', (event, url) => {
+    download(BrowserWindow.getFocusedWindow(), url, {directory: './applications/archives'})
+      .then(dl => {
+        console.log(dl.getSavePath())
+      })
+      .catch(e => {
+        console.error(e)
+      })
+  })
+}
+
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes(['app'], { secure: true })
+protocol.registerStandardSchemes(['app'], {secure: true})
+
 function createMainWindow () {
   const window = new BrowserWindow({
     webPreferences: {
@@ -135,6 +151,8 @@ function createMainWindow () {
   })
 
   window.setTouchBar(touchBar)
+
+  downloadHandler()
 
   if (isDevelopment) {
     // Load the url of the dev server if in development mode
