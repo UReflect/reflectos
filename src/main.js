@@ -1,6 +1,7 @@
 import '@babel/polyfill'
 import Vue from 'vue'
 import '@/plugins/vuetify'
+import '@/plugins/notifications'
 import '@/services'
 import '@/components'
 import Reflectos from '@/Reflectos.vue'

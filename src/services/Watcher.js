@@ -99,7 +99,7 @@ export class WatcherService {
   remove (name) {
     let idx = this.applications.findIndex(a => a.name === name)
     let app = this.applications[idx]
-    WatcherService.deleteFolderRecursive(`${apps.apps}/${app.name}.${app.version}/${app.name}.${app.version}.vue`)
+    WatcherService.deleteFolderRecursive(`${apps.apps}/${app.name}.${app.version}/`)
     this.applications.splice(idx, 1)
   }
 

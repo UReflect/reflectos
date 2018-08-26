@@ -1,5 +1,6 @@
 <template>
   <div id="reflectos">
+    <sdk-helpers />
     <v-app dark>
       <router-view/>
     </v-app>
@@ -7,11 +8,17 @@
 </template>
 
 <script>
-const {ipcRenderer} = require('electron')
+import { Notification } from 'reflectos-sdk'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'Reflectos',
   mounted: function () {
+    // create a simple notification
+    let notif = new Notification('hello', 'info', 'This is a simple information')
+    notif.emit('main-renderer', 1)
+    notif.emitAt('main-renderer', 1, '*/5 * * * * *')
+
     ipcRenderer.on('pinchInTB', (event, props) => {
       console.log('need to simulate pinchIn')
     })
