@@ -1,0 +1,12 @@
+{
+  "title": "Setup",
+  "welcome_message": "Welcome, this is your dashboard.",
+  "loading": "Loading",
+  "initializing": "Initializing mirror",
+  "joincode": "Please make sure to enter your join code on your device",
+  "searchingWiFi": "Searching for WiFi networks",
+  "connectingWiFi": "Connecting to Wifi",
+  "askConfigMirror": "Please go back on your device to end the setup",
+  "waitForUser": "Waiting for your global informations",
+  "waitForProfile": "Waiting your first profile"
+}

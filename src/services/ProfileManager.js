@@ -1,0 +1,100 @@
+import Vue from 'vue'
+import store from '@/store'
+
+export class ProfileManagerService {
+  constructor () {
+    console.log('profileManager created')
+  }
+
+  unlock (code) {
+    console.log('unlocking', code)
+    console.log('subscribing to', `/profiles/${store.getters.getCurrentProfile.id}/verify/status`)
+    Vue.broker.on(`/profiles/${store.getters.getCurrentProfile.id}/verify/status`, ProfileManagerService.pinCheck)
+    Vue.broker.subscribe(`/profiles/${store.getters.getCurrentProfile.id}/verify/status`, null, (err, granted) => {
+      console.log('hello', err, granted)
+      store.commit('unlockProfile', { loading: true, locked: true, error: false })
+      Vue.broker.publish(`/pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${code}","profileID":${store.getters.getCurrentProfile.id}}}`).then(() => {
+        console.log('published')
+      }).catch((err) => {
+        console.log('error publishing', err)
+      })
+    })
+  }
+
+  static pinCheck (message, packet) {
+    try {
+      let data = JSON.parse(new TextDecoder('utf-8').decode(message))
+      store.commit('unlockProfile', { loading: false, locked: !data.success, error: !data.success })
+    } catch (e) {
+      console.log(e)
+      store.commit('unlockProfile', { loading: false, locked: true, error: true })
+    }
+  }
+
+  listenProfileInstalls (profile) {
+    Vue.broker.on(`/profiles/${profile.id}`, ProfileManagerService.installModule)
+    Vue.broker.subscribe(`/profiles/${profile.id}`)
+  }
+
+  static installModule (message, packet) {
+    console.log('message=', new TextDecoder('utf-8').decode(message))
+    try {
+      let data = JSON.parse(new TextDecoder('utf-8').decode(message))
+      if (data.type === 'PROVIDER_CREATED') {
+        let str = JSON.parse(atob(data.data.data))
+        console.log('str access_token: ', str.access_token)
+        Vue.httpSpotify.setBearer(str.access_token)
+        store.commit('pushProvider', data.data)
+      }
+      console.log(data)
+    } catch (ignored) {}
+  }
+
+  resolveMirrorInfos () {
+    return new Promise((resolve, reject) => {
+      Vue.broker.on(`/mirrors/${store.getters.getMirrorID}`, (message, packet) => {
+        console.log('receiving mirror')
+        try {
+          console.log('here')
+          console.log('message=', new TextDecoder('utf-8').decode(message))
+          let data = JSON.parse(new TextDecoder('utf-8').decode(message))
+          console.log('data = ', data)
+          if (data.type === 'MIRROR_JOIN') {
+            store.commit('setMirror', { ...data.data, joined: true, active: true })
+          }
+          resolve()
+        } catch (e) {
+          reject(e)
+        }
+      })
+      console.log(`on subscribe à /mirrors/${store.getters.getMirrorID}`)
+      Vue.broker.subscribe(`/mirrors/${store.getters.getMirrorID}`)
+    })
+  }
+
+  resolveUserInfos () {
+    return new Promise((resolve, reject) => {
+      Vue.broker.on(`/users/${store.getters.getMirrorUserID}`, (message) => {
+        console.log('message=', new TextDecoder('utf-8').decode(message))
+        try {
+          let data = JSON.parse(new TextDecoder('utf-8').decode(message))
+          if (data.type === 'PROFILE_CREATE') {
+            store.commit('pushProfile', { ...data.data, modules: [] })
+            store.commit('selectProfile', data.data)
+          }
+          this.listenProfileInstalls(data.data)
+          resolve()
+        } catch (e) {
+          reject(e)
+        }
+      })
+      Vue.broker.subscribe(`/users/${store.getters.getMirrorUserID}`)
+    })
+  }
+}
+
+export default {
+  install (Vue) {
+    Vue.prototype.$profileManager = new ProfileManagerService()
+  }
+}

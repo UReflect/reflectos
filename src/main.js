@@ -1,12 +1,19 @@
+import '@babel/polyfill'
 import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import '@/plugins/vuetify'
+import '@/services'
+import '@/components'
+import Reflectos from '@/Reflectos.vue'
+import router from '@/router'
+import store from '@/store'
+import i18n from '@/i18n'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
-  render: h => h(App)
-}).$mount('#app')
+  i18n,
+  render: h => h(Reflectos)
+}).$mount('#reflectos')
