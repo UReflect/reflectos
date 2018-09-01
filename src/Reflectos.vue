@@ -9,7 +9,7 @@
 
 <script>
 import { Notification } from 'reflectos-sdk'
-import { ipcRenderer } from 'electron'
+// import { ipcRenderer } from 'electron'
 
 export default {
   name: 'Reflectos',
@@ -19,12 +19,12 @@ export default {
     notif.emit('main-renderer', 1)
     notif.emitAt('main-renderer', 1, '*/5 * * * * *')
 
-    ipcRenderer.on('pinchInTB', (event, props) => {
-      console.log('need to simulate pinchIn')
-    })
-    ipcRenderer.on('pinchOutTB', (event, props) => {
-      console.log('need to simulate pinchOut')
-    })
+    // ipcRenderer.on('pinchInTB', (event, props) => {
+    //   console.log('need to simulate pinchIn')
+    // })
+    // ipcRenderer.on('pinchOutTB', (event, props) => {
+    //   console.log('need to simulate pinchOut')
+    // })
   }
 }
 </script>

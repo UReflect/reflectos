@@ -1,7 +1,8 @@
 #!/bin/sh
 
 rm -rf ./dist_electron
-yarn && yarn build:electron --linux dir
-cp -rf applications ./dist_electron/linux-unpacked
-docker build -t reflectos/core:local -f .docker/Dockerfile ./dist_electron/linux-unpacked
+yarn && yarn build:electron --linux dir --armv7l
+cp -rf applications ./dist_electron/linux-armv7l-unpacked
+cp .docker/qemu-arm-static ./dist_electron/linux-armv7l-unpacked
+docker build -t reflectos/core:local -f .docker/Dockerfile ./dist_electron/linux-armv7l-unpacked
 docker run -ti --rm --privileged -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/.Xauthority:/root/.Xauthority --net=host reflectos/core:local
