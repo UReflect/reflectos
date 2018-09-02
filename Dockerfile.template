@@ -17,7 +17,7 @@ RUN rm -rf ./dist_electron
 RUN yarn && yarn build:electron --linux dir
 RUN cp -rf applications ./dist_electron/linux-unpacked
 
-FROM resin/%%RESIN_MACHINE_NAME%%-node:10
+FROM resin/%%RESIN_MACHINE_NAME%%-node:10-slim
 
 # Install other apt deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
