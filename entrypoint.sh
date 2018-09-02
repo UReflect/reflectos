@@ -16,7 +16,7 @@ if [ ! -c /dev/fb1 ] && [ "$TFT" = "1" ]; then
   modprobe fbtft_device name=pitft verbose=0 rotate=${TFT_ROTATE:-0} || true
   sleep 1
   mknod /dev/fb1 c $(cat /sys/class/graphics/fb1/dev | tr ':' ' ') || true
-  FRAMEBUFFER=/dev/fb1 startx /usr/src/app/node_modules/@vue/cli-service/bin/vue-cli-service.js serve:electron
+  FRAMEBUFFER=/dev/fb1 startx reflectos
 else
-  startx /usr/src/app/node_modules/@vue/cli-service/bin/vue-cli-service.js serve:electron
+  startx reflectos
 fi

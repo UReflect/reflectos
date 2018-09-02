@@ -1,3 +1,22 @@
+FROM resin/%%RESIN_MACHINE_NAME%%-node:10 AS buildstep
+
+RUN apt-get update && apt-get install -y --no-install-recommends libgtk-3-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb x11-apps libatk-adaptor libgail-common libcanberra-gtk-module
+
+WORKDIR /usr/src/app
+
+# Move package.json to filesystem
+COPY ./package.json ./
+
+# Install npm modules for the application
+RUN JOBS=MAX npm install --unsafe-perm  && npm cache clean --force && rm -rf /tmp/*
+
+# Move app to filesystem
+COPY ./ ./
+
+RUN rm -rf ./dist_electron
+RUN yarn && yarn build:electron --linux dir
+RUN cp -rf applications ./dist_electron/linux-unpacked
+
 FROM resin/%%RESIN_MACHINE_NAME%%-node:10
 
 # Install other apt deps
@@ -34,15 +53,8 @@ RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
 # Move to app dir
 WORKDIR /usr/src/app
 
-# Move package.json to filesystem
-COPY ./package.json ./
-
-# Install npm modules for the application
-RUN JOBS=MAX npm install --unsafe-perm --production && npm cache clean --force && \
-  rm -rf /tmp/*
-
-# Move app to filesystem
-COPY ./ ./
+COPY --from=buildstep /usr/src/app/dist_electron/linux-unpacked .
+COPY entrypoint.sh .
 
 ## uncomment if you want systemd
 ENV INITSYSTEM on
