@@ -15,7 +15,7 @@ COPY ./ ./
 
 RUN rm -rf ./dist_electron
 RUN yarn && yarn build:electron --armv7l --linux dir
-RUN cp -rf applications ./dist_electron/linux-unpacked
+RUN cp -rf applications ./dist_electron/linux-armv7l-unpacked
 
 FROM resin/%%RESIN_MACHINE_NAME%%-node:10-slim
 
@@ -53,7 +53,7 @@ RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
 # Move to app dir
 WORKDIR /usr/src/app
 
-COPY --from=buildstep /usr/src/app/dist_electron/linux-unpacked .
+COPY --from=buildstep /usr/src/app/dist_electron/linux-armv7l-unpacked .
 COPY entrypoint.sh .
 
 ## uncomment if you want systemd

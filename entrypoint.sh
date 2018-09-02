@@ -16,7 +16,7 @@ if [ ! -c /dev/fb1 ] && [ "$TFT" = "1" ]; then
   modprobe fbtft_device name=pitft verbose=0 rotate=${TFT_ROTATE:-0} || true
   sleep 1
   mknod /dev/fb1 c $(cat /sys/class/graphics/fb1/dev | tr ':' ' ') || true
-  FRAMEBUFFER=/dev/fb1 startx reflectos
+  FRAMEBUFFER=/dev/fb1 startx /usr/src/app/reflectos
 else
-  startx reflectos
+  startx /usr/src/app/reflectos
 fi
