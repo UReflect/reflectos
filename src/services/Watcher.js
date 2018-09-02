@@ -115,6 +115,10 @@ export class WatcherService {
       require('../../applications/apps/clockdate.v0-1/dist/Clockdate.umd')
       require('../../applications/apps/clockdate.v0-1/dist/Clockdate.css')
       Vue.component(name, window['Clockdate'])
+    } else if (name === 'ur-youtube') {
+      require('../../applications/apps/ur-youtube.v1-1/dist/ur-youtube.umd')
+      require('../../applications/apps/ur-youtube.v1-1/dist/ur-youtube.css')
+      Vue.component(name, window['ur-youtube'])
     } else {
       Vue.component(name, (resolve) => require([`../../${apps.apps}/${application}/${application}.vue`], resolve))
     }

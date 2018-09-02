@@ -1,26 +1,21 @@
 <template>
   <div id="profiles">
-    <v-container grid-list-md>
-      <h4 class="title">Choose a profile:</h4>
-    </v-container>
     <v-container
       grid-list-md
+      justify-content-center
       text-xs-center>
       <v-layout
-        row
+        align-center
+        justify-space-around
         wrap>
-        <v-flex>
-          <v-card
-            dark
-            color="primary">
-            <v-card-text
-              v-for="profile of getProfiles"
-              :key="'profile-' + profile.id"
-              class="px-0"
-              @click="choose(profile)"
-              v-text="profile.title" />
-          </v-card>
-        </v-flex>
+        <v-avatar
+          v-for="profile of getProfiles"
+          :key="'profile-' + profile.id"
+          color="teal"
+          size="256px"
+          @click="choose(profile)">
+          <span class="white--text display-4 font-weight-black text-capitalize">{{ profile.title[0] }}</span>
+        </v-avatar>
       </v-layout>
     </v-container>
   </div>
@@ -48,3 +43,9 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+  #profiles
+    height: 100vh
+    display: flex
+</style>

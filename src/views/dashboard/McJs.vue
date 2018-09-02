@@ -137,35 +137,35 @@ export default {
       this.self.on('click', event => {
         if (this.deleteMode) {
           let module = event.path.find(e => e.dataset.module)
-          console.log('module = ', module)
+          // console.log('module = ', module)
           this.disable(module.dataset.module)
         }
-        console.log('Simple click !!', event)
+        // console.log('Simple click !!', event)
       }).on('dblclick', event => {
-        console.log('Double click !!')
+        // console.log('Double click !!')
         this.zoom(this.zoomarg)
         this.zoomarg = !this.zoomarg
       }).on('pinch', (event, type) => {
         if (type === 'in') {
           this.zoom()
-          console.log('Pinch in !')
+          // console.log('Pinch in !')
         } else {
           this.zoom(false)
-          console.log('Pinch out !')
+          // console.log('Pinch out !')
         }
       }).on('slide', (event, type) => {
         switch (type) {
           case 'left':
-            console.log('Slide left !')
+            // console.log('Slide left !')
             break
           case 'right':
-            console.log('Slide Right !')
+            // console.log('Slide Right !')
             break
         }
       })
     },
     zoom: function (inside = true) {
-      console.log('is zooming ahah')
+      // console.log('is zooming ahah')
       var container = this.$refs.container
       var elemWidgets = this.$refs.addWidget
       var elemTitle = this.$refs.title
