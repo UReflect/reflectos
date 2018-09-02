@@ -44,6 +44,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libsmbclient \
   libssh-4 \
   fbset \
+  libgtk-3-0 \
+  libgconf-2-4 \
+  libasound2 \
+  libxtst6 \
+  libxss1 \
+  libnss3 \
+  xvfb \
+  x11-apps \
+  libatk-adaptor \
+  libgail-common \
+  libcanberra-gtk-module \
   libexpat-dev && rm -rf /var/lib/apt/lists/*
 
 RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
