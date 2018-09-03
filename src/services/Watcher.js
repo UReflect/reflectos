@@ -107,21 +107,9 @@ export class WatcherService {
     let name = application.split('.')[0]
     let version = application.split('.')[1]
 
-    if (name === 'store') {
-      require('../../applications/apps/store.v0-1/dist/store.umd.min')
-      require('../../applications/apps/store.v0-1/dist/store.css')
-      Vue.component(name, window['store'])
-    // } else if (name === 'clockdate') {
-    //   require('../../applications/apps/clockdate.v0-1/dist/Clockdate.umd')
-    //   require('../../applications/apps/clockdate.v0-1/dist/Clockdate.css')
-    //   Vue.component(name, window['Clockdate'])
-    } else if (name === 'ur-youtube') {
-      require('../../applications/apps/ur-youtube.v1-1/dist/ur-youtube.umd')
-      require('../../applications/apps/ur-youtube.v1-1/dist/ur-youtube.css')
-      Vue.component(name, window['ur-youtube'])
-    } else {
-      Vue.component(name, (resolve) => require([`../../${apps.apps}/${application}/${application}.vue`], resolve))
-    }
+    require(`../../applications/apps/${application}/${name}.umd.min`)
+    require(`../../applications/apps/${application}/${name}.css`)
+    Vue.component(name, window[name])
     this.applications.push({ name, version })
     try {
       this.callback()

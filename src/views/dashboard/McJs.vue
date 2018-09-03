@@ -53,7 +53,7 @@
           v-for="app of getCurrentProfileDisabledApps"
           :key="'app-disable-' + app"
           color="blue-grey darken-2"
-          class="white--text demo-item">
+          class="white--text">
           <v-card-title primary-title>
             <div class="headline">
               <v-icon>mdi-application</v-icon>
@@ -75,12 +75,11 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import { MC } from '@drartemi/mcjs'
+import * as MC from '@drartemi/mcjs'
 
 export default {
   name: 'McJs',
-  components: {MC},
-  data: () => ({self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true}),
+  data: () => ({self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null }}),
   computed: {
     ...mapGetters(['getCurrentProfile']),
     getCurrentProfileDisabledApps: function () {
@@ -128,7 +127,7 @@ export default {
       }, 150)
     },
     init: function () {
-      this.self = new MC('widget-container', '.widget', [19, 10], false, true)
+      this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
       //   this.self.on('click', event => {
       //     if (this.deleteMode) {
       //       let module = event.path.find(e => e.dataset.module)
@@ -166,7 +165,47 @@ export default {
           this.zoom(false)
           // console.log('Pinch out !')
         }
+        this.setWidgets()
+
+        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+
+        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       })
+    },
+    setWidgets: function () {
+      this.list = []
+      document.querySelectorAll('.widget-item').forEach((el) => {
+        let newEl = el.cloneNode(true)
+        el.parentNode.replaceChild(newEl, el)
+        this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
+      })
+    },
+    endDrag: function (e, widget) {
+      let contx = this.$refs.container.getBoundingClientRect().left
+      let conty = this.$refs.container.getBoundingClientRect().top
+      let contw = this.$refs.container.offsetWidth * 0.65
+      let conth = this.$refs.container.offsetHeight * 0.65
+
+      let pageX = e.touches ? widget.prevx : e.pageX
+      let pageY = e.touches ? widget.prevy : e.pageY
+
+      if (pageX > contx && pageX < contx + contw &&
+          pageY > conty && pageY < conty + conth) {
+        // TODO: Add real module here
+        let node = document.createElement('div')
+        var nodeStr = "<div class='widget' data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><span>Item 4</span></div>"
+        node.innerHTML = nodeStr
+        this.$refs.container.appendChild(node.firstChild)
+
+        this.self.setWidgets()
+      }
+
+      widget.el.parentNode.removeChild(widget.el)
+      this.setWidgets()
+
+      this.curWidget.curWidget = null
     },
     zoom: function (inside = true) {
       // console.log('is zooming ahah')

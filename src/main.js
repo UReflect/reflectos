@@ -11,7 +11,6 @@ import i18n from '@/i18n'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
-console.log(process.env)
 
 new Vue({
   router,

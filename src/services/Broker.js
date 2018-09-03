@@ -129,7 +129,7 @@ export class BrokerService {
         this.options.username = username
         this.options.password = password
       }
-      let url = `${process.env.VUE_APP_MQTT_SERVER_HOST}:${process.env.VUE_APP_MQTT_SERVER_PORT}/${process.env.VUE_APP_MQTT_SERVER_PATH}`
+      let url = `${process.env.VUE_APP_MQTT_SERVER_PROTOCOL}://${process.env.VUE_APP_MQTT_SERVER_HOST}:${process.env.VUE_APP_MQTT_SERVER_PORT}/${process.env.VUE_APP_MQTT_SERVER_PATH}`
       console.log(url)
       this.client = mqtt.connect(url, this.options)
       this.listen(resolve, reject)

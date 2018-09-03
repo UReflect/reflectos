@@ -92,16 +92,15 @@ export default {
     if (!this.getCurrentProfile) {
       this.$router.push({ name: 'profiles' })
     }
-    // this.unlockProfile({ loading: false, error: false, locked: false })
+    this.unlockProfile({ loading: false, error: false, locked: false })
   },
   methods: {
     ...mapMutations(['lockProfile', 'unlockProfile']),
     unlock: function () {
-      console.log(this.getMirrorBrokerUser, this.getMirrorBrokerPass)
-      this.$broker.on(`/profiles/${this.getCurrentProfile.id}/verify/status`, this.pinCheck)
-      this.$broker.subscribe(`/profiles/${this.getCurrentProfile.id}/verify/status`)
+      this.$broker.on(`profiles/${this.getCurrentProfile.id}/verify/status`, this.pinCheck)
+      this.$broker.subscribe(`profiles/${this.getCurrentProfile.id}/verify/status`)
       this.unlockProfile({ loading: true, locked: true, error: false })
-      this.$broker.publish(`/pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${this.code}","profileID":${this.getCurrentProfile.id}}}`)
+      this.$broker.publish(`pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${this.code}","profileID":${this.getCurrentProfile.id}}}`)
     },
     pinCheck: function (message, packet) {
       try {
