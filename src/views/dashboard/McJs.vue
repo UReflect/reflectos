@@ -44,31 +44,34 @@
     </div>
     <div
       v-show="isZoomed"
-      id="add-widgets"
       ref="addWidget">
       <v-layout
-        id="apps"
+        id="add-widgets"
         justify-space-around>
-        <v-card
+        <div
           v-for="app of getCurrentProfileDisabledApps"
           :key="'app-disable-' + app"
-          color="blue-grey darken-2"
-          class="white--text">
-          <v-card-title primary-title>
-            <div class="headline">
-              <v-icon>mdi-application</v-icon>
-              {{ app }}
-            </div>
-            <div>Description of this app</div>
-          </v-card-title>
-          <v-card-actions>
-            <v-btn
-              flat
-              dark
-              @click="enable(app)"
-              v-text="'Enable'"/>
-          </v-card-actions>
-        </v-card>
+          class="item-container"
+        >
+          <v-card
+            color="blue-grey darken-2"
+            class="widget-item white--text">
+            <v-card-title primary-title>
+              <div class="headline">
+                <v-icon>mdi-application</v-icon>
+                {{ app }}
+              </div>
+              <div>Description of this app</div>
+            </v-card-title>
+            <v-card-actions>
+              <v-btn
+                flat
+                dark
+                @click="enable(app)"
+                v-text="'Enable'"/>
+            </v-card-actions>
+          </v-card>
+        </div>
       </v-layout>
     </div>
   </div>
