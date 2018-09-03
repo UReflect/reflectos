@@ -2,10 +2,8 @@
   <div>
     <div
       class="widget"
-      data-posX="1"
-      data-posY="6"
-      data-x="3"
-      data-y="2">
+      data-widgetInfos="{'posX': 1, 'posY': 1, 'sizeX': 1, 'sizeY': 1}"
+      >
       <div
         v-if="analogMode"
         class="clock"

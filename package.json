@@ -11,7 +11,6 @@
     "serve:electron": "vue-cli-service serve:electron"
   },
   "dependencies": {
-    "@drartemi/mc.js": "^1.0.1",
     "aws-sdk": "^2.302.0",
     "axios": "^0.18.0",
     "chokidar": "^2.0.4",
@@ -38,6 +37,7 @@
   },
   "devDependencies": {
     "@babel/polyfill": "^7.0.0-beta.49",
+    "@drartemi/mcjs": "^1.0.2",
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-eslint": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",

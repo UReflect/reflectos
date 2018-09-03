@@ -1,0 +1,74 @@
+FROM resin/%%RESIN_MACHINE_NAME%%-node:10 AS buildstep
+
+RUN apt-get update && apt-get install -y --no-install-recommends libgtk-3-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb x11-apps libatk-adaptor libgail-common libcanberra-gtk-module
+
+WORKDIR /usr/src/app
+
+# Move package.json to filesystem
+COPY ./package.json ./
+
+# Install npm modules for the application
+RUN JOBS=MAX npm install --unsafe-perm  && npm cache clean --force && rm -rf /tmp/*
+
+# Move app to filesystem
+COPY ./ ./
+
+RUN rm -rf ./dist_electron
+RUN yarn && yarn build:electron --armv7l --linux dir
+RUN cp -rf applications ./dist_electron/linux-armv7l-unpacked
+
+FROM resin/%%RESIN_MACHINE_NAME%%-node:10-slim
+
+# Install other apt deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  apt-utils \
+  clang \
+  xserver-xorg-core \
+  xserver-xorg-input-all \
+  xserver-xorg-video-fbdev \
+  xorg \
+  libxcb-image0 \
+  libxcb-util0 \
+  xdg-utils \
+  libdbus-1-dev \
+  libgtk2.0-dev \
+  libnotify-dev \
+  libgnome-keyring-dev \
+  libgconf2-dev \
+  libasound2-dev \
+  libcap-dev \
+  libcups2-dev \
+  libxtst-dev \
+  libxss1 \
+  libnss3-dev \
+  libsmbclient \
+  libssh-4 \
+  fbset \
+  libgtk-3-0 \
+  libgconf-2-4 \
+  libasound2 \
+  libxtst6 \
+  libxss1 \
+  libnss3 \
+  xvfb \
+  x11-apps \
+  libatk-adaptor \
+  libgail-common \
+  libcanberra-gtk-module \
+  libexpat-dev && rm -rf /var/lib/apt/lists/*
+
+RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
+  && echo "" >> /etc/X11/xinit/xserverrc \
+  && echo 'exec /usr/bin/X -s 0 dpms -nocursor -nolisten tcp "$@"' >> /etc/X11/xinit/xserverrc
+
+# Move to app dir
+WORKDIR /usr/src/app
+
+COPY --from=buildstep /usr/src/app/dist_electron/linux-armv7l-unpacked .
+COPY entrypoint.sh .
+
+## uncomment if you want systemd
+ENV INITSYSTEM on
+
+# Start app
+CMD ["bash", "/usr/src/app/entrypoint.sh"]
