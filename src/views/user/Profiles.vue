@@ -26,12 +26,14 @@ import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'Profiles',
-  computed: mapGetters(['getProfiles']),
+  computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
   mounted: function () {
-    this.pushProfile({
-      id: '0',
-      title: 'debug',
-      modules: []
+    this.$broker.connect('guest', 'guest').then(() => {
+      this.pushProfile({
+        id: '0',
+        title: 'debug',
+        modules: []
+      })
     })
   },
   methods: {

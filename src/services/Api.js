@@ -9,7 +9,7 @@ export class ApiService {
     this.source = null
   }
 
-  static create (host = process.env.API_HOST, headers = {}) {
+  static create (host = process.env.VUE_APP_API_HOST, headers = {}) {
     console.debug('[reflectos][Service][Api] ApiService::create')
     return axios.create({
       baseURL: host,
@@ -18,7 +18,7 @@ export class ApiService {
     })
   }
 
-  create (host = process.env.API_HOST, headers = {}) {
+  create (host = process.env.VUE_APP_API_HOST, headers = {}) {
     console.debug('[reflectos][Service][Api] ApiService::create')
     return axios.create({
       baseURL: host,

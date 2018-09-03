@@ -88,11 +88,11 @@ export default {
     }
   },
   mounted: function () {
-    // this.lockProfile()
+    this.lockProfile()
     if (!this.getCurrentProfile) {
       this.$router.push({ name: 'profiles' })
     }
-    this.unlockProfile({ loading: false, error: false, locked: false })
+    // this.unlockProfile({ loading: false, error: false, locked: false })
   },
   methods: {
     ...mapMutations(['lockProfile', 'unlockProfile']),
@@ -147,7 +147,7 @@ body
     bottom: 10px
     left: 0
     right: 0
-    width: 230px
+    width: 320px
     .input
       background-color: transparent !important
       font-weight: bold
@@ -156,6 +156,8 @@ body
       border-radius: 100px
       width: auto
       margin: auto
+      padding: 6px
+      font-size: 25px
       transition: all 0.1s ease-in
       &:focus, &:active
         background-color: #fff !important
