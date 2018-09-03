@@ -14,10 +14,11 @@
         v-show="!load"
         :key="'app-' + index"
         :is="app"
-        :data-module="app" />
+        :data-module="app"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
-        class="messages widget">
+        class="messages widget"
+        data-widgetInfos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
         <h3 v-if="load">Refreshing...</h3>
         <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">No modules enabled. Pinch out to edit</h3>
       </div>
@@ -32,11 +33,13 @@
         justify-space-around>
         <v-icon
           class="icon-lock"
-          @click="lock">lock</v-icon>
+          @click="lock">lock
+        </v-icon>
         <v-icon
           :class="{ 'red--text': deleteMode }"
           class="icon-delete"
-          @click="deleteMode = !deleteMode">delete</v-icon>
+          @click="deleteMode = !deleteMode">delete
+        </v-icon>
       </v-layout>
     </div>
     <div
@@ -52,7 +55,10 @@
           color="blue-grey darken-2"
           class="white--text demo-item">
           <v-card-title primary-title>
-            <div class="headline"><v-icon>mdi-application</v-icon> {{ app }}</div>
+            <div class="headline">
+              <v-icon>mdi-application</v-icon>
+              {{ app }}
+            </div>
             <div>Description of this app</div>
           </v-card-title>
           <v-card-actions>
@@ -60,7 +66,7 @@
               flat
               dark
               @click="enable(app)"
-              v-text="'Enable'" />
+              v-text="'Enable'"/>
           </v-card-actions>
         </v-card>
       </v-layout>
@@ -69,12 +75,12 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import MC from '@drartemi/mc.js'
+import { MC } from '@drartemi/mcjs'
 
 export default {
   name: 'McJs',
-  components: { MC },
-  data: () => ({ self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true }),
+  components: {MC},
+  data: () => ({self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true}),
   computed: {
     ...mapGetters(['getCurrentProfile']),
     getCurrentProfileDisabledApps: function () {
@@ -122,45 +128,43 @@ export default {
       }, 150)
     },
     init: function () {
-      this.self = new MC('.widget', {
-        container: 'widget-container',
-        drag: {
-          clickType: 'longClick'
-        },
-        grid: {
-          sizeX: 19,
-          sizeY: 10,
-          debug: false,
-          pile: false
-        }
-      })
-      this.self.on('click', event => {
-        if (this.deleteMode) {
-          let module = event.path.find(e => e.dataset.module)
-          // console.log('module = ', module)
-          this.disable(module.dataset.module)
-        }
-        // console.log('Simple click !!', event)
-      }).on('dblclick', event => {
-        // console.log('Double click !!')
-        this.zoom(this.zoomarg)
-        this.zoomarg = !this.zoomarg
-      }).on('pinch', (event, type) => {
+      this.self = new MC('widget-container', '.widget', [19, 10], false, true)
+      //   this.self.on('click', event => {
+      //     if (this.deleteMode) {
+      //       let module = event.path.find(e => e.dataset.module)
+      //       // console.log('module = ', module)
+      //       this.disable(module.dataset.module)
+      //     }
+      //     // console.log('Simple click !!', event)
+      //   }).on('dblclick', event => {
+      //     // console.log('Double click !!')
+      //     this.zoom(this.zoomarg)
+      //     this.zoomarg = !this.zoomarg
+      //   }).on('pinch', (event, type) => {
+      //     if (type === 'in') {
+      //       this.zoom()
+      //       // console.log('Pinch in !')
+      //     } else {
+      //       this.zoom(false)
+      //       // console.log('Pinch out !')
+      //     }
+      //   }).on('slide', (event, type) => {
+      //     switch (type) {
+      //       case 'left':
+      //         // console.log('Slide left !')
+      //         break
+      //       case 'right':
+      //         // console.log('Slide Right !')
+      //         break
+      //     }
+      //   })
+      this.self.onPinch((event, type) => {
         if (type === 'in') {
           this.zoom()
           // console.log('Pinch in !')
         } else {
           this.zoom(false)
           // console.log('Pinch out !')
-        }
-      }).on('slide', (event, type) => {
-        switch (type) {
-          case 'left':
-            // console.log('Slide left !')
-            break
-          case 'right':
-            // console.log('Slide Right !')
-            break
         }
       })
     },
@@ -191,152 +195,157 @@ export default {
     },
     lock: function () {
       this.lockProfile()
-      this.$router.push({ name: 'profiles' })
+      this.$router.push({name: 'profiles'})
     }
   }
 }
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+  @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 
-body { font-family: 'Roboto', sans-serif; background-color: black; color: white; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+    color: white;
+  }
 
-#widget-container {
-  transition: all 1s;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-}
+  #widget-container {
+    transition: all 1s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
 
-#add-widgets {
-  position: absolute;
-  margin-right: auto;
-  margin-left: auto;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 800px;
-}
+  #add-widgets {
+    position: absolute;
+    margin-right: auto;
+    margin-left: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 800px;
+  }
 
-#page-title {
-  position: absolute;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 30px;
-  right: 0;
-  left: 0;
-  top: 0;
-  color: white;
-  font-size: 52px;
-  font-weight: 100;
-}
+  #page-title {
+    position: absolute;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 30px;
+    right: 0;
+    left: 0;
+    top: 0;
+    color: white;
+    font-size: 52px;
+    font-weight: 100;
+  }
 
-#users {
-  position: absolute;
-  margin-bottom: auto;
-  margin-top: auto;
-  margin-left: 25px;
-  opacity: 0;
-  bottom: 0;
-  left: 0;
-  top: 0;
-  height: 500px;
-}
+  #users {
+    position: absolute;
+    margin-bottom: auto;
+    margin-top: auto;
+    margin-left: 25px;
+    opacity: 0;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    height: 500px;
+  }
 
-#others {
-  position: absolute;
-  margin-bottom: auto;
-  margin-top: auto;
-  margin-right: 25px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  height: 400px;
-}
+  #others {
+    position: absolute;
+    margin-bottom: auto;
+    margin-top: auto;
+    margin-right: 25px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 400px;
+  }
 
-#item1 {
-  background-image: url('~@/assets/goku.gif');
-  background-size: 100% 100%;
-}
+  #item1 {
+    background-image: url('~@/assets/goku.gif');
+    background-size: 100% 100%;
+  }
 
-#item2 {
-  background-image: url('~@/assets/wut.gif');
-  background-size: 100% 100%;
-}
+  #item2 {
+    background-image: url('~@/assets/wut.gif');
+    background-size: 100% 100%;
+  }
 
-#item3 {
-  background: url('~@/assets/wow.gif');
-  background-size: 100% 100%;
-}
+  #item3 {
+    background: url('~@/assets/wow.gif');
+    background-size: 100% 100%;
+  }
 
-#item4 {
-  background: url('~@/assets/snoop.gif');
-  background-size: 100% 100%;
-}
+  #item4 {
+    background: url('~@/assets/snoop.gif');
+    background-size: 100% 100%;
+  }
 
-#item5 {
-  background-color: #E65100;
-}
+  #item5 {
+    background-color: #E65100;
+  }
 
-.demo-item {
-  margin: 15px;
-}
+  .demo-item {
+    margin: 15px;
+  }
 
-.circled {
-  border: 1px solid #FFF;
-  border-radius: 50px;
-}
+  .circled {
+    border: 1px solid #FFF;
+    border-radius: 50px;
+  }
 
-.align-horizontal {
-  float: left;
-}
+  .align-horizontal {
+    float: left;
+  }
 
-.user {
-  text-align: center;
-  margin-bottom: 50px;
-}
+  .user {
+    text-align: center;
+    margin-bottom: 50px;
+  }
 
-.user img {
-  display:block;
-  width:100%;
-  height:100%;
-  margin-bottom: 5px;
-}
+  .user img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin-bottom: 5px;
+  }
 
-.user span {
-  display:block;
-  font-size: 18px;
-  color: white;
-  font-weight: 100;
-}
+  .user span {
+    display: block;
+    font-size: 18px;
+    color: white;
+    font-weight: 100;
+  }
 
-#lock > .icon-delete, #lock > .icon-lock {
-  font-size: 40px;
-}
-.icon-delete {
-  margin-top: 20px;
-}
+  #lock > .icon-delete, #lock > .icon-lock {
+    font-size: 40px;
+  }
 
-#widget-container > .messages {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+  .icon-delete {
+    margin-top: 20px;
+  }
 
-#widget-container > .messages h3 {
-  color: white;
-  font-weight: 100;
-}
+  #widget-container > .messages {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
 
-#widget-container > .messages h3 {
-  font-size: 3.5em;
-}
+  #widget-container > .messages h3 {
+    color: white;
+    font-weight: 100;
+  }
+
+  #widget-container > .messages h3 {
+    font-size: 3.5em;
+  }
 
 </style>
