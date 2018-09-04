@@ -79,10 +79,11 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import * as MC from '@drartemi/mcjs'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'McJs',
-  data: () => ({self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null }}),
+  data: () => ({ self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null } }),
   computed: {
     ...mapGetters(['getCurrentProfile']),
     getCurrentProfileDisabledApps: function () {
@@ -176,6 +177,12 @@ export default {
         document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
         document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       })
+      ipcRenderer.on('pinchInTB', () => {
+        this.zoom(true)
+      })
+      ipcRenderer.on('pinchOutTB', () => {
+        this.zoom(false)
+      })
     },
     setWidgets: function () {
       this.list = []
@@ -237,7 +244,7 @@ export default {
     },
     lock: function () {
       this.lockProfile()
-      this.$router.push({name: 'profiles'})
+      this.$router.push({ name: 'profiles' })
     }
   }
 }
