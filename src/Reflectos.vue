@@ -9,7 +9,6 @@
 
 <script>
 import { Notification, Calendar, Event, CacheManager } from 'reflectos-sdk'
-import { ipcRenderer } from 'electron'
 
 window['Notification'] = Notification
 window['Calendar'] = Calendar
@@ -23,15 +22,6 @@ export default {
     let notif = new Notification('hello', 'info', 'This is a simple information')
     notif.emit('main-renderer', 1)
     notif.emitAt('main-renderer', 1, '*/5 * * * * *')
-
-    if (process.env.NODE_ENV === 'development') {
-      ipcRenderer.on('pinchInTB', (event, props) => {
-        console.log('need to simulate pinchIn')
-      })
-      ipcRenderer.on('pinchOutTB', (event, props) => {
-        console.log('need to simulate pinchOut')
-      })
-    }
   }
 }
 </script>
