@@ -54,6 +54,7 @@
           class="item-container"
         >
           <v-card
+            :data-widget-name="app"
             color="blue-grey darken-2"
             class="widget-item white--text">
             <v-card-title primary-title>
@@ -77,12 +78,13 @@
   </div>
 </template>
 <script>
+import Vue from 'vue'
 import { mapGetters, mapMutations } from 'vuex'
 import * as MC from '@drartemi/mcjs'
 
 export default {
   name: 'McJs',
-  data: () => ({self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null }}),
+  data: () => ({ self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null } }),
   computed: {
     ...mapGetters(['getCurrentProfile']),
     getCurrentProfileDisabledApps: function () {
@@ -178,12 +180,17 @@ export default {
       })
     },
     setWidgets: function () {
-      this.list = []
+      this.enableCurrentProfileApp(name)
+      // this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
         let newEl = el.cloneNode(true)
         el.parentNode.replaceChild(newEl, el)
         this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
       })
+      this.load = true
+      setTimeout(() => {
+        this.load = false
+      }, 150)
     },
     endDrag: function (e, widget) {
       let contx = this.$refs.container.getBoundingClientRect().left
@@ -191,17 +198,26 @@ export default {
       let contw = this.$refs.container.offsetWidth * 0.65
       let conth = this.$refs.container.offsetHeight * 0.65
 
+      console.log('draging widget:', widget)
+
       let pageX = e.touches ? widget.prevx : e.pageX
       let pageY = e.touches ? widget.prevy : e.pageY
 
       if (pageX > contx && pageX < contx + contw &&
           pageY > conty && pageY < conty + conth) {
         // TODO: Add real module here
-        let node = document.createElement('div')
-        var nodeStr = "<div class='widget' data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><span>Item 4</span></div>"
-        node.innerHTML = nodeStr
-        this.$refs.container.appendChild(node.firstChild)
 
+        var ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
+        let instance = new ComponentClass({})
+        instance.$mount() // pass nothing
+        instance.$el.dataset.widgetInfos = `{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}`
+        this.$refs.container.appendChild(instance.$el)
+
+        // let node = document.createElement('div')
+        // var nodeStr = `<div class="widget" data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><div :is="${widget.el.dataset.widgetName}"></div></div>`
+        // node.innerHTML = nodeStr
+        // this.$refs.container.appendChild(node.firstChild)
+        // this.enable(widget.el.dataset.widgetName)
         this.self.setWidgets()
       }
 
@@ -237,7 +253,7 @@ export default {
     },
     lock: function () {
       this.lockProfile()
-      this.$router.push({name: 'profiles'})
+      this.$router.push({ name: 'profiles' })
     }
   }
 }
