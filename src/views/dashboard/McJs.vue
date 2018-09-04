@@ -14,11 +14,13 @@
         v-show="!load"
         :key="'app-' + index"
         :is="app"
-        :data-module="app"/>
+        :data-module="app"
+        data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}"
+        class="widget" />
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
         class="messages widget"
-        data-widgetInfos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
+        data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
         <h3 v-if="load">Refreshing...</h3>
         <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">No modules enabled. Pinch out to edit</h3>
       </div>
@@ -78,9 +80,10 @@
   </div>
 </template>
 <script>
-import Vue from 'vue'
+// import Vue from 'vue'
 import { mapGetters, mapMutations } from 'vuex'
 import * as MC from '@drartemi/mcjs'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'McJs',
@@ -178,19 +181,21 @@ export default {
         document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
         document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       })
+      ipcRenderer.on('pinchInTB', () => {
+        this.zoom(true)
+      })
+      ipcRenderer.on('pinchOutTB', () => {
+        this.zoom(false)
+      })
     },
     setWidgets: function () {
-      this.enableCurrentProfileApp(name)
-      // this.list = []
+      // this.enableCurrentProfileApp(name)
+      this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
         let newEl = el.cloneNode(true)
         el.parentNode.replaceChild(newEl, el)
         this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
       })
-      this.load = true
-      setTimeout(() => {
-        this.load = false
-      }, 150)
     },
     endDrag: function (e, widget) {
       let contx = this.$refs.container.getBoundingClientRect().left
@@ -207,22 +212,27 @@ export default {
           pageY > conty && pageY < conty + conth) {
         // TODO: Add real module here
 
-        var ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
-        let instance = new ComponentClass({})
-        instance.$mount() // pass nothing
-        instance.$el.dataset.widgetInfos = `{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}`
-        this.$refs.container.appendChild(instance.$el)
+        // const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
+        // const instance = new ComponentClass()
+        // instance.$mount() // pass nothing
+        // instance.$el.classList.add('widget')
+        // instance.$el.dataset.widgetInfos = `{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}`
+        // this.$refs.container.appendChild(instance.$el)
+        // instance.$options.methods.changeLocation()
+        // this.list.push(instance)
+        this.enable(widget.el.dataset.widgetName)
+        this.setWidgets()
 
         // let node = document.createElement('div')
         // var nodeStr = `<div class="widget" data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><div :is="${widget.el.dataset.widgetName}"></div></div>`
         // node.innerHTML = nodeStr
         // this.$refs.container.appendChild(node.firstChild)
         // this.enable(widget.el.dataset.widgetName)
-        this.self.setWidgets()
+        // this.self.setWidgets()
       }
 
-      widget.el.parentNode.removeChild(widget.el)
-      this.setWidgets()
+      // widget.el.parentNode.removeChild(widget.el)
+      // this.setWidgets()
 
       this.curWidget.curWidget = null
     },
