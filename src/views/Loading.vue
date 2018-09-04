@@ -1,9 +1,9 @@
 <template>
   <div class="loading">
-    <h1 v-text="message" />
     <loader
       :process="load"
       @loaded="loaded" />
+    <h3 v-text="message" />
   </div>
 </template>
 
@@ -42,3 +42,19 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+  .loading
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 100vh
+    width: 100vw
+    flex-direction: column
+
+    h3
+      color: white
+      font-family: 'Roboto', sans-serif
+      font-size: 3.5em
+      font-weight: 100
+</style>

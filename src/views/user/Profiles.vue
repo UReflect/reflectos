@@ -32,7 +32,7 @@ export default {
 
     })
     this.pushProfile({
-      id: '0',
+      id: 34,
       title: 'debug',
       modules: []
     })

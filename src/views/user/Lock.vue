@@ -97,12 +97,13 @@ export default {
   methods: {
     ...mapMutations(['lockProfile', 'unlockProfile']),
     unlock: function () {
-      this.$broker.on(`profiles/${this.getCurrentProfile.id}/verify/status`, this.pinCheck)
       this.$broker.subscribe(`profiles/${this.getCurrentProfile.id}/verify/status`)
+      this.$broker.on(`profiles/${this.getCurrentProfile.id}/verify/status`, this.pinCheck)
       this.unlockProfile({ loading: true, locked: true, error: false })
-      this.$broker.publish(`pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${this.code}","profileID":${this.getCurrentProfile.id}}}`)
+      this.$broker.publish('pinVerify', `{"type":"PIN_CHECK","data":{"pin":"${this.code}","profileID":${this.getCurrentProfile.id}}}`)
     },
     pinCheck: function (message, packet) {
+      console.log('here')
       try {
         let data = JSON.parse(new TextDecoder('utf-8').decode(message))
         this.unlockProfile({ loading: false, locked: !data.success, error: !data.success })

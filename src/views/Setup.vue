@@ -37,7 +37,7 @@
             <v-expansion-panel class="wifi-list-table">
               <v-expansion-panel-content
                 v-for="(network, i) in wifiNetworks"
-                :key="i">
+                :key="`network-${network.ssid}-${i}`">
                 <div slot="header">{{ network.ssid }}</div>
                 <v-card>
                   <v-card-text style="display: flex;justify-content: flex-start;align-items: center;">
@@ -90,7 +90,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'Setup',
   data: () => ({
-    mirror: {broker_password: '', broker_user: '', JoinCode: ''},
+    mirror: { broker_password: '', broker_user: '', JoinCode: '' },
     wifiNetworks: [],
     passwordWifi: '',
     states: -1,
@@ -129,8 +129,8 @@ export default {
     },
     searchingWifi: function () {
       this.states = this.setupStates.SEARCHING_WIFI
-      this.$wifi.scan().then(response => {
-        this.wifiNetworks = response.networks
+      this.$wifi.scan().then(networks => {
+        this.wifiNetworks = networks
         this.states = this.setupStates.LISTING_WIFI_NETWORKS
       })
     },
@@ -154,7 +154,7 @@ export default {
       this.states = this.setupStates.CONNECTING_TO_WIFI
       this.$wifi.connect(ssid, this.passwordWifi).then(res => {
         console.log(res)
-        if (res.success === true) {
+        if (res) {
           this.states = this.setupStates.INITIALIZING_MIRROR
           this.initMirror()
         } else {
