@@ -80,7 +80,7 @@
   </div>
 </template>
 <script>
-// import Vue from 'vue'
+import Vue from 'vue'
 import { mapGetters, mapMutations } from 'vuex'
 import * as MC from '@drartemi/mcjs'
 import { ipcRenderer } from 'electron'
@@ -200,10 +200,11 @@ export default {
     endDrag: function (e, widget) {
       let contx = this.$refs.container.getBoundingClientRect().left
       let conty = this.$refs.container.getBoundingClientRect().top
-      let contw = this.$refs.container.offsetWidth * 0.65
-      let conth = this.$refs.container.offsetHeight * 0.65
+      let contw = this.$refs.container.getBoundingClientRect().width
+      let conth = this.$refs.container.getBoundingClientRect().height
 
       console.log('draging widget:', widget)
+      console.log('draging widget:', widget.el.parentNode)
 
       let pageX = e.touches ? widget.prevx : e.pageX
       let pageY = e.touches ? widget.prevy : e.pageY
@@ -212,16 +213,23 @@ export default {
           pageY > conty && pageY < conty + conth) {
         // TODO: Add real module here
 
-        // const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
-        // const instance = new ComponentClass()
-        // instance.$mount() // pass nothing
-        // instance.$el.classList.add('widget')
-        // instance.$el.dataset.widgetInfos = `{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}`
-        // this.$refs.container.appendChild(instance.$el)
-        // instance.$options.methods.changeLocation()
+        const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
+        const instance = new ComponentClass()
+        instance.$mount() // pass nothing
+        instance.$el.classList.add('widget')
+
+        // instance.$el.setAttribute('data-widget-infos', '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}')
+        // instance.$el.dataset['widget-infos'] = '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}'
+
+        this.$refs.container.appendChild(instance.$el)
+        instance.$options.methods.changeLocation()
+
         // this.list.push(instance)
+
         this.enable(widget.el.dataset.widgetName)
-        this.setWidgets()
+        widget.el.parentNode.removeChild(widget.el)
+
+        // this.setWidgets()
 
         // let node = document.createElement('div')
         // var nodeStr = `<div class="widget" data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><div :is="${widget.el.dataset.widgetName}"></div></div>`
@@ -229,10 +237,10 @@ export default {
         // this.$refs.container.appendChild(node.firstChild)
         // this.enable(widget.el.dataset.widgetName)
         // this.self.setWidgets()
+      } else {
+        widget.el.parentNode.removeChild(widget.el)
+        this.setWidgets()
       }
-
-      // widget.el.parentNode.removeChild(widget.el)
-      // this.setWidgets()
 
       this.curWidget.curWidget = null
     },
