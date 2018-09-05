@@ -218,11 +218,11 @@ export default {
         instance.$mount() // pass nothing
         instance.$el.classList.add('widget')
 
-        // instance.$el.setAttribute('data-widget-infos', '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}')
+        instance.$el.setAttribute('data-widget-infos', '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}')
         // instance.$el.dataset['widget-infos'] = '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}'
 
         this.$refs.container.appendChild(instance.$el)
-        instance.$options.methods.changeLocation()
+        // instance.$options.methods.changeLocation()
 
         // this.list.push(instance)
 
