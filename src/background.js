@@ -14,7 +14,7 @@ if (isDevelopment) {
 
   const widevine = require('electron-widevinecdm')
   widevine.load(app)
-  const {TouchBarLabel, TouchBarButton, TouchBarSpacer} = TouchBar
+  const { TouchBarLabel, TouchBarButton, TouchBarSpacer } = TouchBar
 
   const reel1 = new TouchBarLabel()
   const reel2 = new TouchBarLabel()
@@ -96,26 +96,26 @@ if (isDevelopment) {
 
   var touchBar = new TouchBar([
     pinchInBtn,
-    new TouchBarSpacer({size: 'small'}),
+    new TouchBarSpacer({ size: 'small' }),
     pinchOutBtn,
-    new TouchBarSpacer({size: 'large'}),
+    new TouchBarSpacer({ size: 'large' }),
     spin,
-    new TouchBarSpacer({size: 'small'}),
+    new TouchBarSpacer({ size: 'small' }),
     reel1,
-    new TouchBarSpacer({size: 'small'}),
+    new TouchBarSpacer({ size: 'small' }),
     reel2,
-    new TouchBarSpacer({size: 'small'}),
+    new TouchBarSpacer({ size: 'small' }),
     reel3,
-    new TouchBarSpacer({size: 'small'}),
+    new TouchBarSpacer({ size: 'small' }),
     result
   ])
 }
 
-const {download} = require('electron-dl')
+const { download } = require('electron-dl')
 
 function downloadHandler () {
   ipcMain.on('download-module', (event, url) => {
-    download(BrowserWindow.getFocusedWindow(), url, {directory: './applications/archives'})
+    download(BrowserWindow.getFocusedWindow(), url, { directory: './applications/archives' })
       .then(dl => {
         console.log(dl.getSavePath())
       })
@@ -126,7 +126,7 @@ function downloadHandler () {
 }
 
 // Standard scheme must be registered before the app is ready
-protocol.registerStandardSchemes(['ur'], {secure: true})
+protocol.registerStandardSchemes(['ur'], { secure: true })
 
 function createMainWindow () {
   const window = new BrowserWindow({
@@ -174,6 +174,8 @@ function createMainWindow () {
       window.focus()
     })
   })
+
+  window.openDevTools()
 
   return window
 }
