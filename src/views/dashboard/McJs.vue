@@ -430,11 +430,12 @@ export default {
 
   #widget-container > .messages {
     display: flex;
-    width: 100vw;
-    height: 100vh;
+    width: 100vw !important;
+    height: 80vh !important;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    left: 0!important;
   }
 
   #widget-container > .messages h3 {
