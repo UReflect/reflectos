@@ -16,7 +16,7 @@
         :is="app"
         :data-module="app"
         data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}"
-        class="widget" />
+        class="widget"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
         class="messages widget"
@@ -87,7 +87,15 @@ import { ipcRenderer } from 'electron'
 
 export default {
   name: 'McJs',
-  data: () => ({ self: null, load: false, isZoomed: false, deleteMode: false, zoomarg: true, list: [], curWidget: { curWidget: null } }),
+  data: () => ({
+    self: null,
+    load: false,
+    isZoomed: false,
+    deleteMode: false,
+    zoomarg: true,
+    list: [],
+    curWidget: { curWidget: null }
+  }),
   computed: {
     ...mapGetters(['getCurrentProfile']),
     getCurrentProfileDisabledApps: function () {
@@ -165,6 +173,26 @@ export default {
       //         break
       //     }
       //   })
+      ipcRenderer.on('pinchInTB', () => {
+        this.zoom()
+        this.setWidgets()
+
+        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+
+        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+      })
+      ipcRenderer.on('pinchOutTB', () => {
+        this.zoom(false)
+        this.setWidgets()
+
+        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+
+        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+      })
       this.self.onPinch((event, type) => {
         if (type === 'in') {
           this.zoom()
@@ -180,12 +208,6 @@ export default {
 
         document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
         document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
-      ipcRenderer.on('pinchInTB', () => {
-        this.zoom(true)
-      })
-      ipcRenderer.on('pinchOutTB', () => {
-        this.zoom(false)
       })
     },
     setWidgets: function () {
@@ -210,7 +232,7 @@ export default {
       let pageY = e.touches ? widget.prevy : e.pageY
 
       if (pageX > contx && pageX < contx + contw &&
-          pageY > conty && pageY < conty + conth) {
+        pageY > conty && pageY < conty + conth) {
         // TODO: Add real module here
 
         const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
