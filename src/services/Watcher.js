@@ -85,7 +85,7 @@ export class WatcherService {
   }
 
   watch (path) {
-    chokidar.watch(path, {ignored: /(^|[/\\])\../}).on('all', (event, appPath) => {
+    chokidar.watch(path, { ignored: /(^|[/\\])\../ }).on('all', (event, appPath) => {
       switch (event) {
         case 'add' :
           this.onApplicationFound(appPath)
@@ -105,12 +105,20 @@ export class WatcherService {
 
   register (application) {
     let name = application.split('.')[0]
-    let version = application.split('.')[1]
 
     require(`../../applications/apps/${application}/${name}.umd.min`)
     require(`../../applications/apps/${application}/${name}.css`)
+
+    require(`../../applications/apps/${application}/manifest.json`)
+
+    let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
+    data = JSON.parse(data)
+
     Vue.component(name, window[name])
-    this.applications.push({ name, version })
+    this.applications.push({
+      name: name,
+      data: data
+    })
     try {
       this.callback()
     } catch (ignore) {}

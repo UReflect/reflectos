@@ -13,9 +13,9 @@
         v-for="(app, index) of getCurrentProfileEnabledApps"
         v-show="!load"
         :key="'app-' + index"
-        :is="app"
-        :data-module="app"
-        data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}"
+        :is="app.name"
+        :data-module="app.name"
+        :data-widget-infos="JSON.stringify(app.widgetInfos)"
         class="widget"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
@@ -52,17 +52,17 @@
         justify-space-around>
         <div
           v-for="app of getCurrentProfileDisabledApps"
-          :key="'app-disable-' + app"
+          :key="'app-disable-' + app.name"
           class="item-container"
         >
           <v-card
-            :data-widget-name="app"
+            :data-widget-name="app.name"
             color="blue-grey darken-2"
             class="widget-item white--text">
             <v-card-title primary-title>
               <div class="headline">
                 <v-icon>mdi-application</v-icon>
-                {{ app }}
+                {{ app.name }}
               </div>
               <div>Description of this app</div>
             </v-card-title>
@@ -70,7 +70,7 @@
               <v-btn
                 flat
                 dark
-                @click="enable(app)"
+                @click="enable(app.name)"
                 v-text="'Enable'"/>
             </v-card-actions>
           </v-card>
@@ -101,7 +101,10 @@ export default {
     getCurrentProfileDisabledApps: function () {
       return this.$watcher.applications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
-          apps.push(app.name)
+          apps.push({
+            name: app.name,
+            realName: app.data['name']
+          })
         }
         return apps
       }, [])
@@ -109,7 +112,10 @@ export default {
     getCurrentProfileEnabledApps: function () {
       return this.$watcher.applications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) !== -1) {
-          apps.push(app.name)
+          apps.push({
+            name: app.name,
+            widgetInfos: app.data['widget-info']
+          })
         }
         return apps
       }, [])
@@ -226,9 +232,6 @@ export default {
       let contw = this.$refs.container.getBoundingClientRect().width
       let conth = this.$refs.container.getBoundingClientRect().height
 
-      console.log('draging widget:', widget)
-      console.log('draging widget:', widget.el.parentNode)
-
       let pageX = e.touches ? widget.prevx : e.pageX
       let pageY = e.touches ? widget.prevy : e.pageY
 
@@ -241,8 +244,11 @@ export default {
         instance.$mount() // pass nothing
         instance.$el.classList.add('widget')
 
-        instance.$el.setAttribute('data-widget-infos', '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}')
-        // instance.$el.dataset['widget-infos'] = '{"posX": 2, "posY": 2, "sizeX": 3, "sizeY": 3, "resizable": true}'
+        let app = this.$watcher.applications.find(obj => {
+          return obj.name === widget.el.dataset.widgetName
+        })
+
+        instance.$el.setAttribute('data-widget-infos', JSON.stringify(app.data['widget-info']))
 
         this.$refs.container.appendChild(instance.$el)
         // instance.$options.methods.changeLocation()
@@ -433,12 +439,12 @@ export default {
 
   #widget-container > .messages {
     display: flex;
-    width: 100vw !important;
-    height: 80vh !important;
+    /*width: 100vw !important;*/
+    /*height: 80vh !important;*/
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    left: 0!important;
+    /*left: 0!important;*/
   }
 
   #widget-container > .messages h3 {
