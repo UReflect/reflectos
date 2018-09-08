@@ -120,19 +120,19 @@ export default {
     ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),
     enable: function (name) {
       this.enableCurrentProfileApp(name)
-      this.load = true
-      setTimeout(() => {
-        this.load = false
-        this.$nextTick().then(this.init)
-      }, 150)
+      // this.load = true
+      // setTimeout(() => {
+      //   this.load = false
+      //   this.$nextTick().then(this.init)
+      // }, 150)
     },
     disable: function (name) {
       this.disableCurrentProfileApp(name)
-      this.load = true
-      setTimeout(() => {
-        this.load = false
-        this.$nextTick().then(this.init)
-      }, 150)
+      // this.load = true
+      // setTimeout(() => {
+      //   this.load = false
+      //   this.$nextTick().then(this.init)
+      // }, 150)
     },
     init: function () {
       this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
@@ -173,6 +173,7 @@ export default {
           this.zoom(false)
           // console.log('Pinch out !')
         }
+
         this.setWidgets()
 
         document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
@@ -227,7 +228,9 @@ export default {
         // this.list.push(instance)
 
         this.enable(widget.el.dataset.widgetName)
-        widget.el.parentNode.removeChild(widget.el)
+        // widget.el.parentNode.removeChild(widget.el)
+
+        this.self.setWidgets()
 
         // this.setWidgets()
 
@@ -237,10 +240,10 @@ export default {
         // this.$refs.container.appendChild(node.firstChild)
         // this.enable(widget.el.dataset.widgetName)
         // this.self.setWidgets()
-      } else {
-        widget.el.parentNode.removeChild(widget.el)
-        this.setWidgets()
       }
+
+      widget.el.parentNode.removeChild(widget.el)
+      this.setWidgets()
 
       this.curWidget.curWidget = null
     },

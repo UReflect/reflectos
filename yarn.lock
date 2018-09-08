@@ -739,9 +739,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@drartemi/mcjs@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.5.tgz#bbaa0c54a75323acdc4bde13c05d8b915097c068"
+"@drartemi/mcjs@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.7.tgz#129c25f4ddf551d5d399ffa0ccb0c9577021991c"
 
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"
@@ -1527,9 +1527,9 @@ autoprefixer@^8.6.5:
     postcss "^6.0.23"
     postcss-value-parser "^3.2.3"
 
-aws-sdk@^2.302.0:
-  version "2.307.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.307.0.tgz#53a5906d36061d62e7b2ceb243920c7ef8feac97"
+aws-sdk@^2.308.0:
+  version "2.308.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.308.0.tgz#5783013ab5a106d9edf104506321b2e3ebda7cce"
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -10307,9 +10307,9 @@ vuejs-datepicker@^1.5.3:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/vuejs-datepicker/-/vuejs-datepicker-1.5.3.tgz#cf26082526151724ac31a3bb8e89da998e3876df"
 
-vuetify@^1.0.19:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.2.1.tgz#00fc9568bd7ceeaa906b5c339be5f6934411ffa9"
+vuetify@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.2.3.tgz#519bab56c31420892912c0c7dbd23e790c9287bb"
 
 vuex-persistedstate@^2.5.4:
   version "2.5.4"
