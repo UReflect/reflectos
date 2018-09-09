@@ -237,6 +237,7 @@ export default {
         console.warn(widget)
         console.warn(widget.el)
         console.warn(widget.el.dataset.widgetName)
+        console.warn(window)
         console.warn(window[widget.el.dataset.widgetName])
 
         const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
