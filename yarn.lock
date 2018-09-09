@@ -740,8 +740,8 @@
     to-fast-properties "^2.0.0"
 
 "@drartemi/mcjs@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.7.tgz#129c25f4ddf551d5d399ffa0ccb0c9577021991c"
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.8.tgz#613ef92422c4e44fd716feb2f9c56a2c37b3540c"
 
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"

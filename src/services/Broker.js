@@ -63,7 +63,7 @@ export class BrokerService {
   listen (resolve = null, reject = null) {
     this.client.on('message', (topic, message, packet) => {
       try {
-        console.log('received MQTT:', new TextDecoder('utf-8').decode(message))
+        // console.log('received MQTT:', new TextDecoder('utf-8').decode(message))
         this.onCallbacks[topic](message, packet)
       } catch (ignored) {
       } finally {
@@ -77,30 +77,30 @@ export class BrokerService {
         if (resolve) {
           resolve()
         }
-        console.log('[MQTT] event connect: connected')
+        // console.log('[MQTT] event connect: connected')
       } else {
         this.setStatus(500)
         this.stack = res
         if (reject) {
           reject(res)
         }
-        console.log('[MQTT] event connect: not connected')
+        // console.log('[MQTT] event connect: not connected')
       }
     })
 
     this.client.on('reconnect', () => {
       this.setStatus(300)
-      console.log('[MQTT] event received: reconnect')
+      // console.log('[MQTT] event received: reconnect')
     })
 
     this.client.on('offline', () => {
       this.setStatus(100)
-      console.log('[MQTT] event received: offline')
+      // console.log('[MQTT] event received: offline')
     })
 
     this.client.on('close', () => {
       this.setStatus(0)
-      console.log('[MQTT] event received: close')
+      // console.log('[MQTT] event received: close')
     })
 
     this.client.on('error', (err) => {
@@ -109,7 +109,7 @@ export class BrokerService {
       if (!this.reconnect) {
         this.client.end()
       }
-      console.log('[MQTT] event received: error', err)
+      // console.log('[MQTT] event received: error', err)
     })
 
     this.client.on('packetsend', (packet) => {
