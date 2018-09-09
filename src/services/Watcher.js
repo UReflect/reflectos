@@ -27,9 +27,7 @@ export class WatcherService {
 
   getExistingApplications (path) {
     let ignore = ['.DS_Store', '__MACOSX']
-    console.log('Register apps')
     fs.readdirSync(path).forEach(file => {
-      console.log(file)
       if (ignore.indexOf(file) === -1) {
         this.register(file)
       }
@@ -116,11 +114,17 @@ export class WatcherService {
     let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
     data = JSON.parse(data)
 
+    console.log(data)
+
     Vue.component(name, window[name])
+
     this.applications.push({
       name: name,
       data: data
     })
+
+    console.log(this.applications)
+
     try {
       this.callback()
     } catch (ignore) {}
