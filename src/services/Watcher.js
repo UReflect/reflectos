@@ -27,7 +27,9 @@ export class WatcherService {
 
   getExistingApplications (path) {
     let ignore = ['.DS_Store', '__MACOSX']
+    console.log('Register apps')
     fs.readdirSync(path).forEach(file => {
+      console.log(file)
       if (ignore.indexOf(file) === -1) {
         this.register(file)
       }
