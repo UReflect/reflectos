@@ -37,11 +37,6 @@
           class="icon-lock"
           @click="lock">lock
         </v-icon>
-        <v-icon
-          :class="{ 'red--text': deleteMode }"
-          class="icon-delete"
-          @click="deleteMode = !deleteMode">delete
-        </v-icon>
       </v-layout>
     </div>
     <div
@@ -239,9 +234,20 @@ export default {
         pageY > conty && pageY < conty + conth) {
         // TODO: Add real module here
 
+        console.warn(widget)
+        console.warn(widget.el)
+        console.warn(widget.el.dataset.widgetName)
+        console.warn(window[widget.el.dataset.widgetName])
+
         const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
         const instance = new ComponentClass()
         instance.$mount() // pass nothing
+
+        console.warn(instance)
+        console.warn(instance.$el)
+        console.warn(instance.$el.classList)
+        console.warn('--------------------')
+
         instance.$el.classList.add('widget')
 
         let app = this.$watcher.applications.find(obj => {
