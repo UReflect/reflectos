@@ -114,16 +114,12 @@ export class WatcherService {
     let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
     data = JSON.parse(data)
 
-    console.log(data)
-
     Vue.component(name, window[name])
 
     this.applications.push({
       name: name,
       data: data
     })
-
-    console.log(this.applications)
 
     try {
       this.callback()

@@ -129,51 +129,13 @@ export default {
     ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),
     enable: function (name) {
       this.enableCurrentProfileApp(name)
-      // this.load = true
-      // setTimeout(() => {
-      //   this.load = false
-      //   this.$nextTick().then(this.init)
-      // }, 150)
     },
     disable: function (name) {
       this.disableCurrentProfileApp(name)
-      // this.load = true
-      // setTimeout(() => {
-      //   this.load = false
-      //   this.$nextTick().then(this.init)
-      // }, 150)
     },
     init: function () {
       this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
-      //   this.self.on('click', event => {
-      //     if (this.deleteMode) {
-      //       let module = event.path.find(e => e.dataset.module)
-      //       // console.log('module = ', module)
-      //       this.disable(module.dataset.module)
-      //     }
-      //     // console.log('Simple click !!', event)
-      //   }).on('dblclick', event => {
-      //     // console.log('Double click !!')
-      //     this.zoom(this.zoomarg)
-      //     this.zoomarg = !this.zoomarg
-      //   }).on('pinch', (event, type) => {
-      //     if (type === 'in') {
-      //       this.zoom()
-      //       // console.log('Pinch in !')
-      //     } else {
-      //       this.zoom(false)
-      //       // console.log('Pinch out !')
-      //     }
-      //   }).on('slide', (event, type) => {
-      //     switch (type) {
-      //       case 'left':
-      //         // console.log('Slide left !')
-      //         break
-      //       case 'right':
-      //         // console.log('Slide Right !')
-      //         break
-      //     }
-      //   })
+
       ipcRenderer.on('pinchInTB', () => {
         this.zoom()
         this.setWidgets()
@@ -197,10 +159,8 @@ export default {
       this.self.onPinch((event, type) => {
         if (type === 'in') {
           this.zoom()
-          // console.log('Pinch in !')
         } else {
           this.zoom(false)
-          // console.log('Pinch out !')
         }
 
         this.setWidgets()
@@ -213,7 +173,6 @@ export default {
       })
     },
     setWidgets: function () {
-      // this.enableCurrentProfileApp(name)
       this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
         let newEl = el.cloneNode(true)
@@ -232,22 +191,20 @@ export default {
 
       if (pageX > contx && pageX < contx + contw &&
         pageY > conty && pageY < conty + conth) {
-        // TODO: Add real module here
-
-        console.warn(widget)
-        console.warn(widget.el)
-        console.warn(widget.el.dataset.widgetName)
-        console.warn(window)
-        console.warn(window[widget.el.dataset.widgetName])
+        // console.warn(widget)
+        // console.warn(widget.el)
+        // console.warn(widget.el.dataset.widgetName)
+        // console.warn(window)
+        // console.warn(window[widget.el.dataset.widgetName])
 
         const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
         const instance = new ComponentClass()
         instance.$mount() // pass nothing
 
-        console.warn(instance)
-        console.warn(instance.$el)
-        console.warn(instance.$el.classList)
-        console.warn('--------------------')
+        // console.warn(instance)
+        // console.warn(instance.$el)
+        // console.warn(instance.$el.classList)
+        // console.warn('--------------------')
 
         instance.$el.classList.add('widget')
 
@@ -258,23 +215,10 @@ export default {
         instance.$el.setAttribute('data-widget-infos', JSON.stringify(app.data['widget-info']))
 
         this.$refs.container.appendChild(instance.$el)
-        // instance.$options.methods.changeLocation()
 
-        // this.list.push(instance)
-
-        this.enable(widget.el.dataset.widgetName)
-        // widget.el.parentNode.removeChild(widget.el)
+        // this.enable(widget.el.dataset.widgetName)
 
         this.self.setWidgets()
-
-        // this.setWidgets()
-
-        // let node = document.createElement('div')
-        // var nodeStr = `<div class="widget" data-widgetInfos='{\"posX\": 2, \"posY\": 2, \"sizeX\": 3, \"sizeY\": 3, \"resizable\": true}'><div :is="${widget.el.dataset.widgetName}"></div></div>`
-        // node.innerHTML = nodeStr
-        // this.$refs.container.appendChild(node.firstChild)
-        // this.enable(widget.el.dataset.widgetName)
-        // this.self.setWidgets()
       }
 
       widget.el.parentNode.removeChild(widget.el)
@@ -283,7 +227,6 @@ export default {
       this.curWidget.curWidget = null
     },
     zoom: function (inside = true) {
-      // console.log('is zooming ahah')
       var container = this.$refs.container
       var elemWidgets = this.$refs.addWidget
       var elemTitle = this.$refs.title

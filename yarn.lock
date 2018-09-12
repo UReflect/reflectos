@@ -739,9 +739,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@drartemi/mcjs@^1.0.7":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.9.tgz#0d00cab8275503a698fe960de494f67519a24806"
+"@drartemi/mcjs@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.10.tgz#cc64f90df08ca54ccc2f196ed2d687390e7d6aa4"
 
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"
