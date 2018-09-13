@@ -75,7 +75,7 @@
   </div>
 </template>
 <script>
-import Vue from 'vue'
+// import Vue from 'vue'
 import { mapGetters, mapMutations } from 'vuex'
 import * as MC from '@drartemi/mcjs'
 import { ipcRenderer } from 'electron'
@@ -129,9 +129,13 @@ export default {
     ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),
     enable: function (name) {
       this.enableCurrentProfileApp(name)
+      this.$nextTick().then(() => {
+        this.self.setWidgets()
+      })
     },
     disable: function (name) {
       this.disableCurrentProfileApp(name)
+      this.$nextTick().then(this.self.setWidgets)
     },
     init: function () {
       this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
@@ -191,34 +195,7 @@ export default {
 
       if (pageX > contx && pageX < contx + contw &&
         pageY > conty && pageY < conty + conth) {
-        // console.warn(widget)
-        // console.warn(widget.el)
-        // console.warn(widget.el.dataset.widgetName)
-        // console.warn(window)
-        // console.warn(window[widget.el.dataset.widgetName])
-
-        const ComponentClass = Vue.extend(window[widget.el.dataset.widgetName])
-        const instance = new ComponentClass()
-        instance.$mount() // pass nothing
-
-        // console.warn(instance)
-        // console.warn(instance.$el)
-        // console.warn(instance.$el.classList)
-        // console.warn('--------------------')
-
-        instance.$el.classList.add('widget')
-
-        let app = this.$watcher.applications.find(obj => {
-          return obj.name === widget.el.dataset.widgetName
-        })
-
-        instance.$el.setAttribute('data-widget-infos', JSON.stringify(app.data['widget-info']))
-
-        this.$refs.container.appendChild(instance.$el)
-
-        // this.enable(widget.el.dataset.widgetName)
-
-        this.self.setWidgets()
+        this.enable(widget.el.dataset.widgetName)
       }
 
       widget.el.parentNode.removeChild(widget.el)
