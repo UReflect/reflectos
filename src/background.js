@@ -7,13 +7,14 @@ import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-buil
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+const widevine = require('electron-widevinecdm')
+widevine.load(app)
+
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow
 if (isDevelopment) {
   let spinning = false
 
-  const widevine = require('electron-widevinecdm')
-  widevine.load(app)
   const { TouchBarLabel, TouchBarButton, TouchBarSpacer } = TouchBar
 
   const reel1 = new TouchBarLabel()

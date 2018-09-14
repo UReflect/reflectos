@@ -19,7 +19,7 @@
         class="widget"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
-        class="messages widget"
+        class="messages"
         data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
         <h3 v-if="load">Refreshing...</h3>
         <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">No modules enabled. Pinch out to edit</h3>
@@ -244,6 +244,11 @@ export default {
     color: white;
   }
 
+  .messages.widget {
+    width: 100vw !important;
+    height: 75vh !important;
+  }
+
   #widget-container {
     transition: all 1s;
     position: fixed;
@@ -383,4 +388,45 @@ export default {
     font-size: 3.5em;
   }
 
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  ::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #6b6b6b;
+    border: 0 none white;
+    border-radius: 7px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #616161;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: #1b1b1b;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+    border: 0 none white;
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-track:hover {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-track:active {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 </style>
