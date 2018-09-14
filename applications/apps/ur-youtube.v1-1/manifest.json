@@ -7,7 +7,8 @@
   "widget-info": {
     "posX": 1,
     "posY": 1,
-    "sizeX": 3,
-    "sizeY": 1
+    "sizeX": 7,
+    "sizeY": 4,
+    "resizable": false
   }
 }
