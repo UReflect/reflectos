@@ -133,55 +133,34 @@ export default {
         this.self.setWidgets()
       })
     },
-    disable: function (name) {
+    disable: function (widget) {
+      let name = widget.el.dataset.module
+      console.log('disabling module name', name)
       this.disableCurrentProfileApp(name)
       this.$nextTick().then(this.self.setWidgets)
     },
+    listener: function (event, type) {
+      this.zoom(type === 'in')
+      this.setWidgets()
+      document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+      document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+      document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+      document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+    },
     init: function () {
       this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
+      this.self.trashFunc = this.disable
 
-      ipcRenderer.on('pinchInTB', () => {
-        this.zoom()
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
-      ipcRenderer.on('pinchOutTB', () => {
-        this.zoom(false)
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
-      this.self.onPinch((event, type) => {
-        if (type === 'in') {
-          this.zoom()
-        } else {
-          this.zoom(false)
-        }
-
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
+      ipcRenderer.on('pinchInTB', () => { this.listener(null, 'in') })
+      ipcRenderer.on('pinchOutTB', () => { this.listener(null, 'out') })
+      this.self.onPinch(this.listener)
     },
     setWidgets: function () {
       this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
-        let newEl = el.cloneNode(true)
-        el.parentNode.replaceChild(newEl, el)
-        this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
+        // let newEl = el.cloneNode(true)
+        // el.parentNode.replaceChild(newEl, el)
+        this.list.push(new MC.MCWidget(el, true, this.curWidget))
       })
     },
     endDrag: function (e, widget) {

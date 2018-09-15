@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import store from '@/store'
+import { ipcRenderer } from 'electron'
 
 export class ProfileManagerService {
   constructor () {
@@ -32,11 +33,11 @@ export class ProfileManagerService {
   }
 
   listenProfileInstalls (profile) {
-    Vue.broker.on(`/profiles/${profile.id}`, ProfileManagerService.installModule)
+    Vue.broker.on(`/profiles/${profile.id}`, ProfileManagerService.listenProfile)
     Vue.broker.subscribe(`/profiles/${profile.id}`)
   }
 
-  static installModule (message, packet) {
+  static listenProfile (message, packet) {
     console.log('message=', new TextDecoder('utf-8').decode(message))
     try {
       let data = JSON.parse(new TextDecoder('utf-8').decode(message))
@@ -45,6 +46,12 @@ export class ProfileManagerService {
         console.log('str access_token: ', str.access_token)
         Vue.httpSpotify.setBearer(str.access_token)
         store.commit('pushProvider', data.data)
+      } else if (data.type === 'MODULE_INSTALL') {
+        let id = data.data.id
+        let link = data.data.link
+        let name = data.data.name
+        console.debug('[reflectos][Service][ProfileManager] listenProfile::MODULE_INSTALL', id, name, link)
+        ipcRenderer.send('download-module', link)
       }
       console.log(data)
     } catch (ignored) {}
