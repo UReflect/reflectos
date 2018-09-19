@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '@/store'
 import chokidar from 'chokidar'
 // import Manifest from './Manifest'
 import p from 'path'
@@ -51,6 +52,8 @@ export class WatcherService {
   onApplicationFound (path) {
     let isNew = true
 
+    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationFound', path)
+
     if (path.split('/')[path.split('/').length - 1].toLowerCase().endsWith('.zip')) {
       let zipName = path.split('/')[path.split('/').length - 1].split('.zip')[0]
       if (this.applications.length) {
@@ -70,10 +73,13 @@ export class WatcherService {
             }
           } else {
             if (entry.path && entry.type && entry.path === zipName + '/manifest.json' && entry.type === 'File') {
-              fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps }))
+              fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
+                fs.unlinkSync(path)
+                this.register(zipName)
+              }, (e) => {
+                console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
+              })
               // WatcherService.deleteFolderRecursive(apps.apps + '/__MACOSX')
-              fs.unlinkSync(path)
-              this.register(zipName)
             }
           }
         })
@@ -87,7 +93,7 @@ export class WatcherService {
   watch (path) {
     chokidar.watch(path, { ignored: /(^|[/\\])\../ }).on('all', (event, appPath) => {
       switch (event) {
-        case 'add' :
+        case 'add':
           this.onApplicationFound(appPath)
           break
         default:
@@ -104,63 +110,21 @@ export class WatcherService {
   }
 
   register (application) {
-    let name = application.split('.')[0]
+    setTimeout(() => {
+      const name = application.split('.')[0]
 
-    if (name === 'spotify') {
-      Vue.component('spotify', resolve => require(['../../applications/apps/spotify/src/components/Spotify.vue'], resolve))
-      this.applications.push({
-        name: name,
-        data: {
-          'name': 'Spotify',
-          'version': '1.0',
-          'author': 'Louis Gilbert',
-          'entry_file': '',
-          'css_file': '',
-          'widget-info': {
-            'posX': 1,
-            'posY': 1,
-            'sizeX': 6,
-            'sizeY': 4,
-            'resizable': true
-          }
-        }
-      })
-    } else {
-      require(`../../applications/apps/${application}/${name}.umd.min`)
+      require(`../../applications/apps/${application}/${name}.umd.min.js`)
       require(`../../applications/apps/${application}/${name}.css`)
 
-      require(`../../applications/apps/${application}/manifest.json`)
-      let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
+      let data = fs.readFileSync(`./applications/apps/${application}/manifest.json`, 'utf8')
       data = JSON.parse(data)
 
       Vue.component(name, window[name])
-      this.applications.push({
-        name: name,
-        data: data
-      })
-    }
-
-    try {
-      this.callback()
-    } catch (ignore) {}
-  }
-
-  static asyncLoad (componentName, options) {
-    return Vue.component(componentName, (resolve, reject) => {
-      if (options.templateUrl) {
-        fs.readFile(p.join(apps.apps, options.templateUrl), 'utf8', (error, html) => {
-          if (error) {
-            reject(error)
-          } else {
-            delete options.templateUrl
-            options.template = html
-            resolve(options)
-          }
-        })
-      } else {
-        resolve(options)
-      }
-    })
+      store.commit('addApplication', { name, data })
+      try {
+        this.callback()
+      } catch (ignore) {}
+    }, 0)
   }
 }
 

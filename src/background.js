@@ -126,6 +126,18 @@ function downloadHandler () {
   })
 }
 
+// const systemjs = require('systemjs/dist/system-production.js')
+
+function lazyImport () {
+  ipcMain.on('lazy-import', (event, path) => {
+    // systemjs.import(path).then((data) => {
+    //   console.log('[reflectos][lazy load]', path, data)
+    // }).catch(e => {
+    //   console.error(e)
+    // })
+  })
+}
+
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['ur'], { secure: true })
 
@@ -147,6 +159,7 @@ function createMainWindow () {
   }
 
   downloadHandler()
+  lazyImport()
 
   if (isDevelopment) {
     // Load the url of the dev server if in development mode

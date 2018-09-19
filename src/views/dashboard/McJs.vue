@@ -92,9 +92,9 @@ export default {
     curWidget: { curWidget: null }
   }),
   computed: {
-    ...mapGetters(['getCurrentProfile']),
+    ...mapGetters(['getCurrentProfile', 'getApplications']),
     getCurrentProfileDisabledApps: function () {
-      return this.$watcher.applications.slice().reduce((apps, app) => {
+      return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
           apps.push({
             name: app.name,
@@ -105,7 +105,7 @@ export default {
       }, [])
     },
     getCurrentProfileEnabledApps: function () {
-      return this.$watcher.applications.slice().reduce((apps, app) => {
+      return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) !== -1) {
           apps.push({
             name: app.name,
