@@ -14,7 +14,7 @@ export class HttpSpotifyService {
   }
 
   getProvider (providerID) {
-    axios.get('http://api.dev.ureflect.io/v1/provider/' + providerID, { headers: {'x-access-token': 'suEQYW25q77S6aosP5NNtVYFNPHKbaRwtF5HAmT1bb5Ng7ImqkwnyL0uB-gGqvYYzmXzPII4I_CSiJP1TA_5DloI9lSd3FY7_GUorNl-vFqAMUMXhtsS9-8roVOVji5LMl0FQyGoFdjw3KcZAA9F8skZkTGJVINCFUUC8V_ICeY='} }).then(response => {
+    axios.get('http://api.dev.ureflect.io/v1/provider/' + providerID, { headers: { 'x-access-token': 'suEQYW25q77S6aosP5NNtVYFNPHKbaRwtF5HAmT1bb5Ng7ImqkwnyL0uB-gGqvYYzmXzPII4I_CSiJP1TA_5DloI9lSd3FY7_GUorNl-vFqAMUMXhtsS9-8roVOVji5LMl0FQyGoFdjw3KcZAA9F8skZkTGJVINCFUUC8V_ICeY=' } }).then(response => {
       console.log('RESPONSE PROVIDER: ' + response)
       return response
     }).catch(err => {
@@ -46,11 +46,12 @@ export class HttpSpotifyService {
   }
 
   getToken () {
-    return axios.get('http://localhost:3000/spotify/token')
+    // return axios.get('http://localhost:3000/spotify/token')
+    return Promise.reject(new Error('pas de token'))
   }
 
   search (query, type) {
-    return this.query(this.url + '/search?' + this.encode({q: query, type: type}))
+    return this.query(this.url + '/search?' + this.encode({ q: query, type: type }))
   }
 
   play (uri) {

@@ -106,20 +106,39 @@ export class WatcherService {
   register (application) {
     let name = application.split('.')[0]
 
-    require(`../../applications/apps/${application}/${name}.umd.min`)
-    require(`../../applications/apps/${application}/${name}.css`)
+    if (name === 'spotify') {
+      Vue.component('spotify', resolve => require(['../../applications/apps/spotify/src/components/Spotify.vue'], resolve))
+      this.applications.push({
+        name: name,
+        data: {
+          'name': 'Spotify',
+          'version': '1.0',
+          'author': 'Louis Gilbert',
+          'entry_file': '',
+          'css_file': '',
+          'widget-info': {
+            'posX': 1,
+            'posY': 1,
+            'sizeX': 6,
+            'sizeY': 4,
+            'resizable': true
+          }
+        }
+      })
+    } else {
+      require(`../../applications/apps/${application}/${name}.umd.min`)
+      require(`../../applications/apps/${application}/${name}.css`)
 
-    require(`../../applications/apps/${application}/manifest.json`)
+      require(`../../applications/apps/${application}/manifest.json`)
+      let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
+      data = JSON.parse(data)
 
-    let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
-    data = JSON.parse(data)
-
-    Vue.component(name, window[name])
-
-    this.applications.push({
-      name: name,
-      data: data
-    })
+      Vue.component(name, window[name])
+      this.applications.push({
+        name: name,
+        data: data
+      })
+    }
 
     try {
       this.callback()

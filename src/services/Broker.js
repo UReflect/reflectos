@@ -13,6 +13,8 @@ export class BrokerService {
     this.lastPacketReceived = null // last packet Received
     this.clientId = 'ureflect_mirror_' + store.getters.getMirrorName + '_' + new Date().toISOString()
     this.options = {
+      // connectTimeout: 30 * 1000,
+      // keepalive: true,
       clean: false,
       reconnectPeriod: 1000,
       clientId: this.clientId
@@ -77,39 +79,40 @@ export class BrokerService {
         if (resolve) {
           resolve()
         }
-        // console.log('[MQTT] event connect: connected')
+        console.log('[MQTT] event connect: connected')
       } else {
         this.setStatus(500)
         this.stack = res
         if (reject) {
           reject(res)
         }
-        // console.log('[MQTT] event connect: not connected')
+        console.log('[MQTT] event connect: not connected')
       }
     })
 
     this.client.on('reconnect', () => {
       this.setStatus(300)
-      // console.log('[MQTT] event received: reconnect')
+      console.log('[MQTT] event received: reconnect')
     })
 
     this.client.on('offline', () => {
       this.setStatus(100)
-      // console.log('[MQTT] event received: offline')
+      console.log('[MQTT] event received: offline')
     })
 
     this.client.on('close', () => {
       this.setStatus(0)
-      // console.log('[MQTT] event received: close')
+      console.log('[MQTT] event received: close')
     })
 
     this.client.on('error', (err) => {
       this.setStatus(500)
       this.stack = err
-      if (!this.reconnect) {
-        this.client.end()
-      }
-      // console.log('[MQTT] event received: error', err)
+      console.log('[MQTT] event received: error', err)
+      console.log(this.client)
+      setTimeout(() => {
+        this.client.reconnect()
+      }, 1000)
     })
 
     this.client.on('packetsend', (packet) => {
