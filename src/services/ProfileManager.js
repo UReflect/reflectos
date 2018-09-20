@@ -80,6 +80,11 @@ export class ProfileManagerService {
     })
   }
 
+  bootMirror () {
+    this.resolveMirrorInfos()
+    this.resolveUserInfos()
+  }
+
   resolveUserInfos () {
     return new Promise((resolve, reject) => {
       Vue.broker.on(`users/${store.getters.getMirrorUserID}`, (message) => {

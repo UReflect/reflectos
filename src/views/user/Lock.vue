@@ -12,7 +12,8 @@
       <v-container
         grid-list-md
         fill-height
-        justify-center>
+        justify-center
+        class="lock-container">
         <span v-if="isLockError && code.length === 0">Invalid code, please retry</span>
         <!-- <span class="title">{{ code }}</span> -->
         <span class="input-container">
@@ -22,40 +23,38 @@
             :class="{ check: code.length > (i - 1) }"
             large>whatshot</v-icon>
         </span>
-      </v-container>
-      <v-container
-        grid-list-md
-        text-xs-center
-        class="pad">
-        <v-layout
-          v-for="i in 4"
-          :key="'row-' + i"
-          row
-          wrap>
-          <v-flex
-            v-for="j in 3"
-            :key="'row-' + i + '-col-' + j"
-            xs4>
-            <v-card
-              v-if="((3 * i - 3) + j) !== 10"
-              dark
-              color="primary"
-              class="input">
-              <v-card-text
-                v-if="((3 * i - 3) + j) <= 9"
-                class="px-0"
-                @click="code = code + ((3 * i - 3) + j).toString()">{{ (3 * i - 3) + j }}</v-card-text>
-              <v-card-text
-                v-else-if="((3 * i - 3) + j) === 11"
-                class="px-0"
-                @click="code = code + '0'">0</v-card-text>
-              <v-card-text
-                v-else-if="((3 * i - 3) + j) === 12"
-                class="px-0"
-                @click="code = code.slice(0, -1)">&lt;</v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
+        <v-container
+          grid-list-md
+          text-xs-center
+          class="pad">
+          <v-layout
+            v-for="i in 4"
+            :key="'row-' + i"
+            row
+            wrap>
+            <v-flex
+              v-for="j in 3"
+              :key="'row-' + i + '-col-' + j"
+              xs4>
+              <v-card
+                v-if="((3 * i - 3) + j) !== 10"
+                dark
+                color="primary"
+                class="input"
+                @click.native="addInput((3 * i - 3) + j)">
+                <v-card-text
+                  v-if="((3 * i - 3) + j) <= 9"
+                  class="px-0">{{ (3 * i - 3) + j }}</v-card-text>
+                <v-card-text
+                  v-else-if="((3 * i - 3) + j) === 11"
+                  class="px-0">0</v-card-text>
+                <v-card-text
+                  v-else-if="((3 * i - 3) + j) === 12"
+                  class="px-0">&lt;</v-card-text>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-container>
       </v-container>
     </template>
   </div>
@@ -112,6 +111,15 @@ export default {
         console.log(e)
         this.unlockProfile({ loading: false, locked: true, error: true })
       }
+    },
+    addInput: function (number) {
+      if (number <= 9) {
+        this.code = this.code + number.toString()
+      } else if (number === 11) {
+        this.code = this.code + '0'
+      } else if (number === 12) {
+        this.code = this.code.slice(0, -1)
+      }
     }
   }
 }
@@ -127,6 +135,8 @@ body
   margin-bottom: 20px
 .lock
   height: 100vh
+  .lock-container
+    flex-direction: column
   .input-container
     border: 1px solid #fff
     border-radius: 4px
@@ -143,11 +153,8 @@ body
       &:last-child
         margin-right: 0px
   .pad
-    position: absolute
-    bottom: 10px
-    left: 0
-    right: 0
     width: 320px
+    flex: 0
     .input
       background-color: transparent !important
       font-weight: bold
