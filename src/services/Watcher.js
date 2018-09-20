@@ -1,6 +1,8 @@
 import Vue from 'vue'
+import store from '@/store'
 import chokidar from 'chokidar'
 // import Manifest from './Manifest'
+import { ipcRenderer } from 'electron'
 import p from 'path'
 import * as fs from 'fs'
 import unzip from 'unzipper'
@@ -16,8 +18,9 @@ export class WatcherService {
     console.debug('[reflectos][Service][Watcher] WatcherService::initialized')
     this.applications = []
     this.getExistingApplications(apps.apps)
-    this.watch(apps.archives)
+    // this.watch(apps.archives)
     this.callback = () => ({})
+    ipcRenderer.on('application-downloaded', this.onApplicationFound)
   }
 
   onApplication (callback) {
@@ -29,7 +32,7 @@ export class WatcherService {
     let ignore = ['.DS_Store', '__MACOSX']
     fs.readdirSync(path).forEach(file => {
       if (ignore.indexOf(file) === -1) {
-        this.register(file)
+        WatcherService.register(file)
       }
     })
   }
@@ -48,13 +51,15 @@ export class WatcherService {
     }
   }
 
-  onApplicationFound (path) {
+  onApplicationFound (event, path) {
     let isNew = true
+
+    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationFound', path)
 
     if (path.split('/')[path.split('/').length - 1].toLowerCase().endsWith('.zip')) {
       let zipName = path.split('/')[path.split('/').length - 1].split('.zip')[0]
-      if (this.applications.length) {
-        this.applications.forEach(name => {
+      if (store.getters.getApplications.length) {
+        store.getters.getApplications.forEach(name => {
           if (name === zipName) {
             isNew = false
           }
@@ -70,10 +75,13 @@ export class WatcherService {
             }
           } else {
             if (entry.path && entry.type && entry.path === zipName + '/manifest.json' && entry.type === 'File') {
-              fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps }))
+              fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
+                fs.unlinkSync(path)
+                WatcherService.register(zipName)
+              }, (e) => {
+                console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
+              })
               // WatcherService.deleteFolderRecursive(apps.apps + '/__MACOSX')
-              fs.unlinkSync(path)
-              this.register(zipName)
             }
           }
         })
@@ -87,7 +95,7 @@ export class WatcherService {
   watch (path) {
     chokidar.watch(path, { ignored: /(^|[/\\])\../ }).on('all', (event, appPath) => {
       switch (event) {
-        case 'add' :
+        case 'add':
           this.onApplicationFound(appPath)
           break
         default:
@@ -103,45 +111,20 @@ export class WatcherService {
     this.applications.splice(idx, 1)
   }
 
-  register (application) {
-    let name = application.split('.')[0]
+  static register (application) {
+    const name = application.split('.')[0]
 
-    require(`../../applications/apps/${application}/${name}.umd.min`)
+    require(`../../applications/apps/${application}/${name}.umd.min.js`)
     require(`../../applications/apps/${application}/${name}.css`)
 
-    require(`../../applications/apps/${application}/manifest.json`)
-
-    let data = fs.readFileSync(p.join(process.cwd(), `applications/apps/${application}/manifest.json`), 'utf8')
+    let data = fs.readFileSync(`./applications/apps/${application}/manifest.json`, 'utf8')
     data = JSON.parse(data)
 
     Vue.component(name, window[name])
-
-    this.applications.push({
-      name: name,
-      data: data
-    })
-
-    try {
-      this.callback()
-    } catch (ignore) {}
-  }
-
-  static asyncLoad (componentName, options) {
-    return Vue.component(componentName, (resolve, reject) => {
-      if (options.templateUrl) {
-        fs.readFile(p.join(apps.apps, options.templateUrl), 'utf8', (error, html) => {
-          if (error) {
-            reject(error)
-          } else {
-            delete options.templateUrl
-            options.template = html
-            resolve(options)
-          }
-        })
-      } else {
-        resolve(options)
-      }
-    })
+    store.commit('addApplication', { name, data })
+    // try {
+    // this.callback()
+    // } catch (ignore) {}
   }
 }
 

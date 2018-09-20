@@ -31,11 +31,11 @@ export default {
     this.$broker.connect('guest', 'guest').then(() => {
 
     })
-    this.pushProfile({
-      id: 34,
-      title: 'debug',
-      modules: []
-    })
+    // this.pushProfile({
+    //   id: 34,
+    //   title: 'debug',
+    //   modules: []
+    // })
   },
   methods: {
     ...mapMutations(['selectProfile', 'pushProfile', 'pushProvider']),

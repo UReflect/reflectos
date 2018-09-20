@@ -19,9 +19,9 @@ export default {
   name: 'Reflectos',
   mounted: function () {
     // create a simple notification
-    let notif = new Notification('hello', 'info', 'This is a simple information')
-    notif.emit('main-renderer', 1)
-    notif.emitAt('main-renderer', 1, '*/5 * * * * *')
+    // let notif = new Notification('hello', 'info', 'This is a simple information')
+    // notif.emit('main-renderer', 1)
+    // notif.emitAt('main-renderer', 1, '*/5 * * * * *')
   }
 }
 </script>

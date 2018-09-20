@@ -7,13 +7,14 @@ import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-buil
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+const widevine = require('electron-widevinecdm')
+widevine.load(app)
+
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow
 if (isDevelopment) {
   let spinning = false
 
-  const widevine = require('electron-widevinecdm')
-  widevine.load(app)
   const { TouchBarLabel, TouchBarButton, TouchBarSpacer } = TouchBar
 
   const reel1 = new TouchBarLabel()
@@ -113,15 +114,30 @@ if (isDevelopment) {
 
 const { download } = require('electron-dl')
 
-function downloadHandler () {
+const downloadHandler = () => {
   ipcMain.on('download-module', (event, url) => {
-    download(BrowserWindow.getFocusedWindow(), url, { directory: './applications/archives' })
+    let uri = decodeURIComponent(url)
+    console.log(uri)
+    download(BrowserWindow.getFocusedWindow(), uri, { directory: './applications/archives' })
       .then(dl => {
         console.log(dl.getSavePath())
+        mainWindow.webContents.send('application-downloaded', dl.getSavePath())
       })
       .catch(e => {
         console.error(e)
       })
+  })
+}
+
+// const systemjs = require('systemjs/dist/system-production.js')
+
+function lazyImport () {
+  ipcMain.on('lazy-import', (event, path) => {
+    // systemjs.import(path).then((data) => {
+    //   console.log('[reflectos][lazy load]', path, data)
+    // }).catch(e => {
+    //   console.error(e)
+    // })
   })
 }
 
@@ -146,6 +162,7 @@ function createMainWindow () {
   }
 
   downloadHandler()
+  lazyImport()
 
   if (isDevelopment) {
     // Load the url of the dev server if in development mode

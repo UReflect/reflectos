@@ -19,7 +19,7 @@
         class="widget"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
-        class="messages widget"
+        class="messages"
         data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
         <h3 v-if="load">Refreshing...</h3>
         <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">No modules enabled. Pinch out to edit</h3>
@@ -92,9 +92,9 @@ export default {
     curWidget: { curWidget: null }
   }),
   computed: {
-    ...mapGetters(['getCurrentProfile']),
+    ...mapGetters(['getCurrentProfile', 'getApplications', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
     getCurrentProfileDisabledApps: function () {
-      return this.$watcher.applications.slice().reduce((apps, app) => {
+      return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
           apps.push({
             name: app.name,
@@ -105,7 +105,7 @@ export default {
       }, [])
     },
     getCurrentProfileEnabledApps: function () {
-      return this.$watcher.applications.slice().reduce((apps, app) => {
+      return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) !== -1) {
           apps.push({
             name: app.name,
@@ -116,14 +116,22 @@ export default {
       }, [])
     }
   },
-  mounted: function () {
-    this.$watcher.onApplication(() => {
+  watch: {
+    getApplications: function (newValue) {
       this.load = true
       setTimeout(() => {
         this.load = false
         this.$nextTick().then(this.init)
       }, 1000)
+    }
+  },
+  mounted: function () {
+    this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
+      this.$profileManager.listenProfileInstalls(this.getCurrentProfile)
     })
+    this.init()
+    // this.$watcher.onApplication(() => {
+    // })
   },
   methods: {
     ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),
@@ -133,55 +141,34 @@ export default {
         this.self.setWidgets()
       })
     },
-    disable: function (name) {
+    disable: function (widget) {
+      let name = widget.el.dataset.module
+      console.log('disabling module name', name)
       this.disableCurrentProfileApp(name)
       this.$nextTick().then(this.self.setWidgets)
     },
+    listener: function (event, type) {
+      this.zoom(type === 'in')
+      this.setWidgets()
+      document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+      document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
+      document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+      document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
+    },
     init: function () {
       this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
+      this.self.trashFunc = this.disable
 
-      ipcRenderer.on('pinchInTB', () => {
-        this.zoom()
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
-      ipcRenderer.on('pinchOutTB', () => {
-        this.zoom(false)
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
-      this.self.onPinch((event, type) => {
-        if (type === 'in') {
-          this.zoom()
-        } else {
-          this.zoom(false)
-        }
-
-        this.setWidgets()
-
-        document.addEventListener('mousemove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-        document.addEventListener('touchmove', (e) => { MC.onTouchMove(e, this.curWidget.curWidget) })
-
-        document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-        document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
-      })
+      ipcRenderer.on('pinchInTB', () => { this.listener(null, 'in') })
+      ipcRenderer.on('pinchOutTB', () => { this.listener(null, 'out') })
+      this.self.onPinch(this.listener)
     },
     setWidgets: function () {
       this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
-        let newEl = el.cloneNode(true)
-        el.parentNode.replaceChild(newEl, el)
-        this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
+        // let newEl = el.cloneNode(true)
+        // el.parentNode.replaceChild(newEl, el)
+        this.list.push(new MC.MCWidget(el, true, this.curWidget))
       })
     },
     endDrag: function (e, widget) {
@@ -242,6 +229,11 @@ export default {
     font-family: 'Roboto', sans-serif;
     background-color: black;
     color: white;
+  }
+
+  .messages.widget {
+    width: 100vw !important;
+    height: 75vh !important;
   }
 
   #widget-container {
@@ -383,4 +375,45 @@ export default {
     font-size: 3.5em;
   }
 
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  ::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #6b6b6b;
+    border: 0 none white;
+    border-radius: 7px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #616161;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: #1b1b1b;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+    border: 0 none white;
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-track:hover {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-track:active {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 </style>

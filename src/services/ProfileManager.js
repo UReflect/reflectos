@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import store from '@/store'
+import { ipcRenderer } from 'electron'
 
 export class ProfileManagerService {
   constructor () {
@@ -9,11 +10,11 @@ export class ProfileManagerService {
   unlock (code) {
     console.log('unlocking', code)
     console.log('subscribing to', `/profiles/${store.getters.getCurrentProfile.id}/verify/status`)
-    Vue.broker.on(`/profiles/${store.getters.getCurrentProfile.id}/verify/status`, ProfileManagerService.pinCheck)
+    Vue.broker.on(`profiles/${store.getters.getCurrentProfile.id}/verify/status`, ProfileManagerService.pinCheck)
     Vue.broker.subscribe(`/profiles/${store.getters.getCurrentProfile.id}/verify/status`, null, (err, granted) => {
       console.log('hello', err, granted)
       store.commit('unlockProfile', { loading: true, locked: true, error: false })
-      Vue.broker.publish(`/pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${code}","profileID":${store.getters.getCurrentProfile.id}}}`).then(() => {
+      Vue.broker.publish(`pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${code}","profileID":${store.getters.getCurrentProfile.id}}}`).then(() => {
         console.log('published')
       }).catch((err) => {
         console.log('error publishing', err)
@@ -32,11 +33,12 @@ export class ProfileManagerService {
   }
 
   listenProfileInstalls (profile) {
-    Vue.broker.on(`/profiles/${profile.id}`, ProfileManagerService.installModule)
-    Vue.broker.subscribe(`/profiles/${profile.id}`)
+    console.debug('[reflectos][Service][ProfileManager] listenProfile', profile.id, profile.title)
+    Vue.broker.on(`profiles/${profile.id}`, ProfileManagerService.listenProfile)
+    Vue.broker.subscribe(`profiles/${profile.id}`)
   }
 
-  static installModule (message, packet) {
+  static listenProfile (message, packet) {
     console.log('message=', new TextDecoder('utf-8').decode(message))
     try {
       let data = JSON.parse(new TextDecoder('utf-8').decode(message))
@@ -45,6 +47,12 @@ export class ProfileManagerService {
         console.log('str access_token: ', str.access_token)
         Vue.httpSpotify.setBearer(str.access_token)
         store.commit('pushProvider', data.data)
+      } else if (data.type === 'MODULE_INSTALL') {
+        let id = data.data.id
+        let link = data.data.link
+        let name = data.data.name
+        console.debug('[reflectos][Service][ProfileManager] listenProfile::MODULE_INSTALL', id, name, link)
+        ipcRenderer.send('download-module', link)
       }
       console.log(data)
     } catch (ignored) {}
@@ -52,7 +60,7 @@ export class ProfileManagerService {
 
   resolveMirrorInfos () {
     return new Promise((resolve, reject) => {
-      Vue.broker.on(`/mirrors/${store.getters.getMirrorID}`, (message, packet) => {
+      Vue.broker.on(`mirrors/${store.getters.getMirrorID}`, (message, packet) => {
         console.log('receiving mirror')
         try {
           console.log('here')
@@ -67,14 +75,14 @@ export class ProfileManagerService {
           reject(e)
         }
       })
-      console.log(`on subscribe à /mirrors/${store.getters.getMirrorID}`)
-      Vue.broker.subscribe(`/mirrors/${store.getters.getMirrorID}`)
+      console.log(`on subscribe à mirrors/${store.getters.getMirrorID}`)
+      Vue.broker.subscribe(`mirrors/${store.getters.getMirrorID}`)
     })
   }
 
   resolveUserInfos () {
     return new Promise((resolve, reject) => {
-      Vue.broker.on(`/users/${store.getters.getMirrorUserID}`, (message) => {
+      Vue.broker.on(`users/${store.getters.getMirrorUserID}`, (message) => {
         console.log('message=', new TextDecoder('utf-8').decode(message))
         try {
           let data = JSON.parse(new TextDecoder('utf-8').decode(message))
@@ -88,7 +96,8 @@ export class ProfileManagerService {
           reject(e)
         }
       })
-      Vue.broker.subscribe(`/users/${store.getters.getMirrorUserID}`)
+      console.log(`on subscribe à users/${store.getters.getMirrorUserID}`)
+      Vue.broker.subscribe(`users/${store.getters.getMirrorUserID}`)
     })
   }
 }

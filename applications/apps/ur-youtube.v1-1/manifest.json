@@ -1,13 +1,14 @@
 {
-  "name": "Date",
+  "name": "Youtube",
   "author": "Aurelien",
   "version": "1.0",
-  "entry_file": "index.umd.min.js",
-  "css_file": "main.css",
+  "entry_file": "ur-youtube.umd.min.js",
+  "css_file": "ur-youtube.css",
   "widget-info": {
     "posX": 1,
     "posY": 1,
-    "sizeX": 3,
-    "sizeY": 1
+    "sizeX": 10,
+    "sizeY": 5,
+    "resizable": false
   }
 }

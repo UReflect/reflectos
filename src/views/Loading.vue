@@ -33,8 +33,8 @@ export default {
     },
     loaded: function ({ status, res, error }) {
       if (status !== 'success') {
-        this.$router.push({ name: 'profiles' })
-        // this.$router.push({ name: 'setup' })
+        // this.$router.push({ name: 'profiles' })
+        this.$router.push({ name: 'setup' })
       } else {
         this.$router.push({ name: 'profiles' })
       }

@@ -1,0 +1,14 @@
+{
+  "name": "Weather",
+  "version": "1.0",
+  "author": "Louis Gilbert",
+  "entry_file": "ur-weather.umd.min.js",
+  "css_file": "ur-weather.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 6,
+    "sizeY": 4,
+    "resizable": true
+  }
+}
