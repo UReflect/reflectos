@@ -28,8 +28,8 @@ export default {
   name: 'Profiles',
   computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
   mounted: function () {
-    this.$broker.connect('guest', 'guest').then(() => {
-
+    this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
+      this.$profileManager.bootMirror()
     })
     // this.pushProfile({
     //   id: 34,
