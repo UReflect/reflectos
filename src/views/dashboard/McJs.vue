@@ -92,7 +92,7 @@ export default {
     curWidget: { curWidget: null }
   }),
   computed: {
-    ...mapGetters(['getCurrentProfile', 'getApplications']),
+    ...mapGetters(['getCurrentProfile', 'getApplications', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
     getCurrentProfileDisabledApps: function () {
       return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
@@ -116,14 +116,22 @@ export default {
       }, [])
     }
   },
-  mounted: function () {
-    this.$watcher.onApplication(() => {
+  watch: {
+    getApplications: function (newValue) {
       this.load = true
       setTimeout(() => {
         this.load = false
         this.$nextTick().then(this.init)
       }, 1000)
+    }
+  },
+  mounted: function () {
+    this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
+      this.$profileManager.listenProfileInstalls(this.getCurrentProfile)
     })
+    this.init()
+    // this.$watcher.onApplication(() => {
+    // })
   },
   methods: {
     ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),

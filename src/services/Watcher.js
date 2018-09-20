@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from '@/store'
 import chokidar from 'chokidar'
 // import Manifest from './Manifest'
+import { ipcRenderer } from 'electron'
 import p from 'path'
 import * as fs from 'fs'
 import unzip from 'unzipper'
@@ -17,8 +18,9 @@ export class WatcherService {
     console.debug('[reflectos][Service][Watcher] WatcherService::initialized')
     this.applications = []
     this.getExistingApplications(apps.apps)
-    this.watch(apps.archives)
+    // this.watch(apps.archives)
     this.callback = () => ({})
+    ipcRenderer.on('application-downloaded', this.onApplicationFound)
   }
 
   onApplication (callback) {
@@ -30,7 +32,7 @@ export class WatcherService {
     let ignore = ['.DS_Store', '__MACOSX']
     fs.readdirSync(path).forEach(file => {
       if (ignore.indexOf(file) === -1) {
-        this.register(file)
+        WatcherService.register(file)
       }
     })
   }
@@ -49,15 +51,15 @@ export class WatcherService {
     }
   }
 
-  onApplicationFound (path) {
+  onApplicationFound (event, path) {
     let isNew = true
 
     console.debug('reflectos][Service][Watcher] WatcherService::onApplicationFound', path)
 
     if (path.split('/')[path.split('/').length - 1].toLowerCase().endsWith('.zip')) {
       let zipName = path.split('/')[path.split('/').length - 1].split('.zip')[0]
-      if (this.applications.length) {
-        this.applications.forEach(name => {
+      if (store.getters.getApplications.length) {
+        store.getters.getApplications.forEach(name => {
           if (name === zipName) {
             isNew = false
           }
@@ -75,7 +77,7 @@ export class WatcherService {
             if (entry.path && entry.type && entry.path === zipName + '/manifest.json' && entry.type === 'File') {
               fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
                 fs.unlinkSync(path)
-                this.register(zipName)
+                WatcherService.register(zipName)
               }, (e) => {
                 console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
               })
@@ -109,22 +111,20 @@ export class WatcherService {
     this.applications.splice(idx, 1)
   }
 
-  register (application) {
-    setTimeout(() => {
-      const name = application.split('.')[0]
+  static register (application) {
+    const name = application.split('.')[0]
 
-      require(`../../applications/apps/${application}/${name}.umd.min.js`)
-      require(`../../applications/apps/${application}/${name}.css`)
+    require(`../../applications/apps/${application}/${name}.umd.min.js`)
+    require(`../../applications/apps/${application}/${name}.css`)
 
-      let data = fs.readFileSync(`./applications/apps/${application}/manifest.json`, 'utf8')
-      data = JSON.parse(data)
+    let data = fs.readFileSync(`./applications/apps/${application}/manifest.json`, 'utf8')
+    data = JSON.parse(data)
 
-      Vue.component(name, window[name])
-      store.commit('addApplication', { name, data })
-      try {
-        this.callback()
-      } catch (ignore) {}
-    }, 0)
+    Vue.component(name, window[name])
+    store.commit('addApplication', { name, data })
+    // try {
+    // this.callback()
+    // } catch (ignore) {}
   }
 }
 

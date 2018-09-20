@@ -92,7 +92,7 @@ export default {
     if (!this.getCurrentProfile) {
       this.$router.push({ name: 'profiles' })
     }
-    this.unlockProfile({ loading: false, error: false, locked: false })
+    // this.unlockProfile({ loading: false, error: false, locked: false })
   },
   methods: {
     ...mapMutations(['lockProfile', 'unlockProfile']),

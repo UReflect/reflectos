@@ -13,7 +13,7 @@ export class BrokerService {
     this.lastPacketReceived = null // last packet Received
     this.clientId = 'ureflect_mirror_' + store.getters.getMirrorName + '_' + new Date().toISOString()
     this.options = {
-      // connectTimeout: 30 * 1000,
+      connectTimeout: 60 * 1000,
       // keepalive: true,
       clean: false,
       reconnectPeriod: 1000,
@@ -110,9 +110,9 @@ export class BrokerService {
       this.stack = err
       console.log('[MQTT] event received: error', err)
       console.log(this.client)
-      setTimeout(() => {
-        this.client.reconnect()
-      }, 1000)
+      // setTimeout(() => {
+      //   this.client.reconnect()
+      // }, 1000)
     })
 
     this.client.on('packetsend', (packet) => {

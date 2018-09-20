@@ -114,11 +114,14 @@ if (isDevelopment) {
 
 const { download } = require('electron-dl')
 
-function downloadHandler () {
+const downloadHandler = () => {
   ipcMain.on('download-module', (event, url) => {
-    download(BrowserWindow.getFocusedWindow(), url, { directory: './applications/archives' })
+    let uri = decodeURIComponent(url)
+    console.log(uri)
+    download(BrowserWindow.getFocusedWindow(), uri, { directory: './applications/archives' })
       .then(dl => {
         console.log(dl.getSavePath())
+        mainWindow.webContents.send('application-downloaded', dl.getSavePath())
       })
       .catch(e => {
         console.error(e)

@@ -33,6 +33,7 @@ export class ProfileManagerService {
   }
 
   listenProfileInstalls (profile) {
+    console.debug('[reflectos][Service][ProfileManager] listenProfile', profile.id, profile.title)
     Vue.broker.on(`profiles/${profile.id}`, ProfileManagerService.listenProfile)
     Vue.broker.subscribe(`profiles/${profile.id}`)
   }
