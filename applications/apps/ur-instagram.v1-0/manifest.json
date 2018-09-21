@@ -1,0 +1,14 @@
+{
+  "name": "Twitter",
+  "version": "1.0",
+  "author": "Kevin Empociello",
+  "entry_file": "ur-instagram.umd.min.js",
+  "css_file": "ur-instagram.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 5,
+    "sizeY": 6,
+    "resizable": true
+  }
+}

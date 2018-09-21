@@ -1,0 +1,14 @@
+{
+  "name": "Twitter",
+  "version": "1.0",
+  "author": "Nyrandone Noboud",
+  "entry_file": "ur-twitter.umd.min.js",
+  "css_file": "ur-twitter.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 5,
+    "sizeY": 6,
+    "resizable": true
+  }
+}
