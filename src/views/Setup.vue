@@ -138,6 +138,11 @@ export default {
       this.states = this.setupStates.DISPLAYING_JOIN_CODE
       console.log(this.getMirrorBrokerUser, this.getMirrorBrokerPass)
       this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
+      }).catch((err) => {
+        console.error(err)
+        this.connectBroker()
+      })
+      this.$broker.onConnect(() => {
         this.$profileManager.resolveMirrorInfos().then(() => {
           this.states = this.setupStates.WAITING_FOR_USER
           this.$profileManager.resolveUserInfos().then(() => {
@@ -145,9 +150,6 @@ export default {
             this.$router.push({ name: 'dash' })
           }).catch(this.connectBroker)
         }).catch(this.connectBroker)
-      }).catch((err) => {
-        console.error(err)
-        this.connectBroker()
       })
     },
     connectWifi: function (ssid) {

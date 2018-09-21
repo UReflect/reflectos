@@ -58,15 +58,17 @@ export class WatcherService {
 
     if (path.split('/')[path.split('/').length - 1].toLowerCase().endsWith('.zip')) {
       let zipName = path.split('/')[path.split('/').length - 1].split('.zip')[0]
-      if (store.getters.getApplications.length) {
-        store.getters.getApplications.forEach(name => {
-          if (name === zipName) {
-            isNew = false
-          }
-        })
-      }
+      console.log('zipname:', zipName, isNew)
+      // if (store.getters.getApplications.length) {
+      // store.getters.getApplications.forEach(name => {
+      //   if (name === zipName) {
+      //    isNew = false
+      //  }
+      // })
+      // }
       if (isNew) {
         fs.createReadStream(path).pipe(unzip.Parse()).on('entry', entry => {
+          console.log('getting entry', entry)
           if (entry.path.indexOf(zipName) === -1 && entry.path.indexOf('__MACOSX') === -1) {
             try {
               throw new Error(`Unable to unzip ${zipName}. There are more than one folder at the root`)
@@ -96,7 +98,7 @@ export class WatcherService {
     chokidar.watch(path, { ignored: /(^|[/\\])\../ }).on('all', (event, appPath) => {
       switch (event) {
         case 'add':
-          this.onApplicationFound(appPath)
+          this.onApplicationFound(null, appPath)
           break
         default:
           break

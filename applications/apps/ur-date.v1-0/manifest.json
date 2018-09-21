@@ -1,13 +1,13 @@
 {
   "name": "Date",
-  "version": "0.1",
-  "author": "Aurelien",
+  "version": "1.0",
+  "author": "Louis Gilbert",
   "entry_file": "ur-date.umd.min.js",
   "css_file": "ur-date.css",
   "widget-info": {
-    "posX": 3,
-    "posY": 2,
-    "sizeX": 6,
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 4,
     "sizeY": 1,
     "resizable": true
   }

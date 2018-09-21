@@ -6,6 +6,7 @@ export class BrokerService {
     this.client = null
     this.reconnect = true
     this.onCallbacks = []
+    this.onConnectCallback = () => {}
     this.status = 0 // 0 = closed, 100 = offline, 200 = connected, 300 = reconnecting, 500 = error
     this.statusChange = (val) => {}
     this.stack = null // contains argument (error or connack object)
@@ -13,7 +14,7 @@ export class BrokerService {
     this.lastPacketReceived = null // last packet Received
     this.clientId = 'ureflect_mirror_' + store.getters.getMirrorName + '_' + new Date().toISOString()
     this.options = {
-      connectTimeout: 60 * 1000,
+      connectTimeout: 10 * 60 * 1000,
       // keepalive: true,
       clean: false,
       reconnectPeriod: 1000,
@@ -47,6 +48,10 @@ export class BrokerService {
     return this.lastPacketReceived
   }
 
+  onConnect (callback) {
+    this.onConnectCallback = callback
+  }
+
   reconnectAuto () {
     this.reconnect = true
     return this
@@ -76,6 +81,9 @@ export class BrokerService {
     this.client.on('connect', (res) => {
       if (res.returnCode === 0) {
         this.setStatus(200)
+        try {
+          this.onConnectCallback()
+        } catch (ignored) {}
         if (resolve) {
           resolve()
         }

@@ -145,7 +145,10 @@ export default {
       let name = widget.el.dataset.module
       console.log('disabling module name', name)
       this.disableCurrentProfileApp(name)
-      this.$nextTick().then(this.self.setWidgets)
+      this.$nextTick().then(() => {
+        this.self.setWidgets()
+        this.setWidgets()
+      })
     },
     listener: function (event, type) {
       this.zoom(type === 'in')
@@ -166,9 +169,9 @@ export default {
     setWidgets: function () {
       this.list = []
       document.querySelectorAll('.widget-item').forEach((el) => {
-        // let newEl = el.cloneNode(true)
-        // el.parentNode.replaceChild(newEl, el)
-        this.list.push(new MC.MCWidget(el, true, this.curWidget))
+        let newEl = el.cloneNode(true)
+        el.parentNode.replaceChild(newEl, el)
+        this.list.push(new MC.MCWidget(newEl, true, this.curWidget))
       })
     },
     endDrag: function (e, widget) {
