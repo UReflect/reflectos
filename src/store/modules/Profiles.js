@@ -27,6 +27,16 @@ const getters = {
   },
   isLockLoading (state) {
     return state.loading
+  },
+  getModuleByName: state => name => {
+    if (state.currentProfile && state.currentProfile.modules) {
+      return state.currentProfile.modules.find(m => m.name === name)
+    }
+  },
+  getModuleInfosByName: state => name => {
+    if (state.currentProfile && state.currentProfile.modules) {
+      return (state.currentProfile.modules.find(m => m.name === name) || { widgetInfos: undefined }).widgetInfos
+    }
   }
 }
 
@@ -56,12 +66,18 @@ const mutations = {
       state.error = payload.error
     }
   },
-  enableCurrentProfileApp (state, name) {
+  enableCurrentProfileApp (state, { name, widgetInfos }) {
     if (state.currentProfile) {
       if (!state.currentProfile.modules) {
         state.currentProfile.modules = []
       }
-      state.currentProfile.modules.push({ name })
+      state.currentProfile.modules.push({ name, widgetInfos })
+    }
+  },
+  changeModuleInfos (state, { name, widgetInfos }) {
+    let idx
+    if (state.currentProfile && (idx = state.currentProfile.modules.findIndex(m => m.name === name)) && idx !== -1) {
+      state.currentProfile.modules[idx].widgetInfos = widgetInfos
     }
   },
   disableCurrentProfileApp (state, name) {

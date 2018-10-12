@@ -15,7 +15,7 @@
         :key="'app-' + index"
         :is="app.name"
         :data-module="app.name"
-        :data-widget-infos="JSON.stringify(app.widgetInfos)"
+        :data-widget-infos="app.widgetInfos"
         class="widget"/>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
@@ -52,6 +52,7 @@
         >
           <v-card
             :data-widget-name="app.name"
+            :data-widget-infos="app.widgetInfos"
             color="blue-grey darken-2"
             class="widget-item white--text">
             <v-card-title primary-title>
@@ -59,15 +60,7 @@
                 <v-icon>mdi-application</v-icon>
                 {{ app.name }}
               </div>
-              <div>Description of this app</div>
             </v-card-title>
-            <v-card-actions>
-              <v-btn
-                flat
-                dark
-                @click="enable(app.name)"
-                v-text="'Enable'"/>
-            </v-card-actions>
           </v-card>
         </div>
       </v-layout>
@@ -83,7 +76,7 @@ import { ipcRenderer } from 'electron'
 export default {
   name: 'McJs',
   data: () => ({
-    self: null,
+    self: { widgets: [] },
     load: false,
     isZoomed: false,
     deleteMode: false,
@@ -92,12 +85,13 @@ export default {
     curWidget: { curWidget: null }
   }),
   computed: {
-    ...mapGetters(['getCurrentProfile', 'getApplications', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
+    ...mapGetters(['getCurrentProfile', 'getApplications', 'getMirrorBrokerUser', 'getMirrorBrokerPass', 'getModuleInfosByName']),
     getCurrentProfileDisabledApps: function () {
       return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
           apps.push({
             name: app.name,
+            widgetInfos: JSON.stringify(app.data['widget-info']),
             realName: app.data['name']
           })
         }
@@ -106,10 +100,12 @@ export default {
     },
     getCurrentProfileEnabledApps: function () {
       return this.getApplications.slice().reduce((apps, app) => {
-        if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) !== -1) {
+        let mIdx = this.getCurrentProfile.modules.findIndex(m => m.name === app.name)
+        if (this.getCurrentProfile.modules && mIdx !== -1) {
+          // let mapp = { ...this.getCurrentProfile.modules[mIdx] }
           apps.push({
-            name: app.name,
-            widgetInfos: app.data['widget-info']
+            name: this.getCurrentProfile.modules[mIdx].name,
+            widgetInfos: this.getCurrentProfile.modules[mIdx].widgetInfos
           })
         }
         return apps
@@ -123,6 +119,9 @@ export default {
         this.load = false
         this.$nextTick().then(this.init)
       }, 1000)
+    },
+    self: function (old, newValue) {
+      console.log(newValue)
     }
   },
   mounted: function () {
@@ -134,9 +133,10 @@ export default {
     // })
   },
   methods: {
-    ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile']),
-    enable: function (name) {
-      this.enableCurrentProfileApp(name)
+    ...mapMutations(['enableCurrentProfileApp', 'disableCurrentProfileApp', 'lockProfile', 'changeModuleInfos']),
+    enable: function (name, widgetInfos) {
+      // console.log(name, widgetInfos)
+      this.enableCurrentProfileApp({ name, widgetInfos })
       this.$nextTick().then(() => {
         this.self.setWidgets()
       })
@@ -158,8 +158,13 @@ export default {
       document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
     },
+    onWidgetMove: function (widget) {
+      if (widget.el && widget.el.dataset.widgetInfos && widget.el.dataset.module && widget.el.dataset.widgetInfos !== this.getModuleInfosByName(widget.el.dataset.module)) {
+        this.changeModuleInfos({ name: widget.el.dataset.module, widgetInfos: widget.el.dataset.widgetInfos })
+      }
+    },
     init: function () {
-      this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true)
+      this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true, false, this.onWidgetMove)
       this.self.trashFunc = this.disable
 
       ipcRenderer.on('pinchInTB', () => { this.listener(null, 'in') })
@@ -168,6 +173,7 @@ export default {
     },
     setWidgets: function () {
       this.list = []
+      console.log(this.curWidget)
       document.querySelectorAll('.widget-item').forEach((el) => {
         let newEl = el.cloneNode(true)
         el.parentNode.replaceChild(newEl, el)
@@ -185,7 +191,8 @@ export default {
 
       if (pageX > contx && pageX < contx + contw &&
         pageY > conty && pageY < conty + conth) {
-        this.enable(widget.el.dataset.widgetName)
+        console.log(widget.el.dataset)
+        this.enable(widget.el.dataset.widgetName, widget.el.dataset.widgetInfos)
       }
 
       widget.el.parentNode.removeChild(widget.el)
@@ -237,6 +244,10 @@ export default {
   .messages.widget {
     width: 100vw !important;
     height: 75vh !important;
+  }
+
+  .widget {
+    overflow: hidden;
   }
 
   #widget-container {
