@@ -76,7 +76,7 @@ const mutations = {
   },
   changeModuleInfos (state, { name, widgetInfos }) {
     let idx
-    if (state.currentProfile && (idx = state.currentProfile.modules.findIndex(m => m.name === name)) && idx !== -1) {
+    if (state.currentProfile && (idx = state.currentProfile.modules.findIndex(m => m.name === name)) >= 0) {
       state.currentProfile.modules[idx].widgetInfos = widgetInfos
     }
   },

@@ -139,6 +139,9 @@ export default {
       this.enableCurrentProfileApp({ name, widgetInfos })
       this.$nextTick().then(() => {
         this.self.setWidgets()
+        this.self.widgets.forEach((widget) => {
+          this.changeModuleInfos({ name: widget.el.dataset.module, widgetInfos: widget.el.dataset.widgetInfos })
+        })
       })
     },
     disable: function (widget) {
@@ -148,6 +151,7 @@ export default {
       this.$nextTick().then(() => {
         this.self.setWidgets()
         this.setWidgets()
+        this.self.editModeOn()
       })
     },
     listener: function (event, type) {
@@ -158,14 +162,21 @@ export default {
       document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
     },
-    onWidgetMove: function (widget) {
+    onWidgetMoveEnd: function (e, widget) {
       if (widget.el && widget.el.dataset.widgetInfos && widget.el.dataset.module && widget.el.dataset.widgetInfos !== this.getModuleInfosByName(widget.el.dataset.module)) {
         this.changeModuleInfos({ name: widget.el.dataset.module, widgetInfos: widget.el.dataset.widgetInfos })
       }
     },
     init: function () {
-      this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true, false, this.onWidgetMove)
+      // let widgets = document.getElementsByClassName('widget')
+      // console.log(widgets)
+      // this.disableCurrentProfileApp(widgets[0].getAttribute('data-module'))
+      this.self = new MC.MC('widget-container', '.widget', [19, 10], false, true, false, null, this.onWidgetMoveEnd)
       this.self.trashFunc = this.disable
+
+      this.self.widgets.forEach((widget) => {
+        this.changeModuleInfos({ name: widget.el.dataset.module, widgetInfos: widget.el.dataset.widgetInfos })
+      })
 
       ipcRenderer.on('pinchInTB', () => { this.listener(null, 'in') })
       ipcRenderer.on('pinchOutTB', () => { this.listener(null, 'out') })
@@ -173,7 +184,6 @@ export default {
     },
     setWidgets: function () {
       this.list = []
-      console.log(this.curWidget)
       document.querySelectorAll('.widget-item').forEach((el) => {
         let newEl = el.cloneNode(true)
         el.parentNode.replaceChild(newEl, el)
@@ -191,7 +201,7 @@ export default {
 
       if (pageX > contx && pageX < contx + contw &&
         pageY > conty && pageY < conty + conth) {
-        console.log(widget.el.dataset)
+        // console.log(widget.el.dataset)
         this.enable(widget.el.dataset.widgetName, widget.el.dataset.widgetInfos)
       }
 
