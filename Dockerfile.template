@@ -14,7 +14,7 @@ RUN JOBS=MAX npm install --unsafe-perm  && npm cache clean --force && rm -rf /tm
 COPY ./ ./
 
 RUN rm -rf ./dist_electron
-RUN yarn && yarn build:electron --armv7l --linux dir
+RUN yarn && yarn build --armv7l --linux dir
 RUN cp -rf applications ./dist_electron/linux-armv7l-unpacked
 
 FROM resin/%%RESIN_MACHINE_NAME%%-node:10-slim
