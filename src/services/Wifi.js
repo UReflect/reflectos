@@ -1,3 +1,4 @@
+// TO REWRITE WITH https://www.npmjs.com/package/pi-wifi
 // import WiFiControl from 'wifi-control'
 import DNS from 'dns'
 import wifi from 'node-wifi'
