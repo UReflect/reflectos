@@ -14,7 +14,7 @@ COPY ./package.json ./
 COPY ./ ./
 
 RUN rm -rf ./dist_electron
-RUN yarn && yarn build --armv7l --linux dir
+RUN yarn --ignore-engines && yarn build --armv7l --linux dir
 RUN cp -rf applications ./dist_electron/linux-armv7l-unpacked
 
 FROM resin/%%RESIN_MACHINE_NAME%%-node:10-slim
