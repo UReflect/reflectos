@@ -109,16 +109,18 @@ export default {
   }),
   computed: mapGetters(['getMirrorBrokerUser', 'getMirrorBrokerPass', 'getMirrorJoinCode']),
   mounted: function () {
-    this.$wifi.status().then(connected => {
-      if (connected) {
-        this.states = this.setupStates.INITIALIZING_MIRROR
-        this.initMirror()
-      } else {
-        this.searchingWifi()
-      }
-    }).catch(() => {
-      this.searchingWifi()
-    })
+    this.states = this.setupStates.INITIALIZING_MIRROR
+    this.initMirror()
+    // this.$wifi.status().then(connected => {
+    //   if (connected) {
+    //     this.states = this.setupStates.INITIALIZING_MIRROR
+    //     this.initMirror()
+    //   } else {
+    //     this.searchingWifi()
+    //   }
+    // }).catch(() => {
+    //   this.searchingWifi()
+    // })
   },
   methods: {
     ...mapActions(['init', 'redirect']),

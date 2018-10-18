@@ -46,6 +46,7 @@
     "lint-staged": "^7.3.0",
     "material-design-icons-iconfont": "^3.0.3",
     "node-sass": "^4.9.4",
+    "pi-wifi": "^1.2.0",
     "sass-loader": "^7.1.0",
     "vue-cli-plugin-electron-builder": "^1.0.0-rc.3",
     "vue-cli-plugin-i18n": "^0.5.1",

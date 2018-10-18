@@ -1669,7 +1669,7 @@ async@^1.3.0, async@^1.5.2:
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
   integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
 
-async@^2.0.0, async@^2.1.4, async@^2.3.0, async@^2.5.0:
+async@^2.0.0, async@^2.1.4, async@^2.1.5, async@^2.3.0, async@^2.5.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   integrity sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
@@ -9763,6 +9763,14 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
+pi-wifi@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/pi-wifi/-/pi-wifi-1.2.0.tgz#871aeddcf8ddd21ba194b1811cf4a292c08c5a60"
+  integrity sha1-hxrt3Pjd0huhlLGBHPSiksCMWmA=
+  dependencies:
+    async "^2.1.5"
+    wireless-tools "^0.19.0"
+
 pify@^2.0.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
@@ -13495,6 +13503,11 @@ winston@0.7.3:
     pkginfo "0.3.x"
     request "2.16.x"
     stack-trace "0.0.x"
+
+wireless-tools@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/wireless-tools/-/wireless-tools-0.19.0.tgz#67fb73cd371f2d9ba3b9ef253400a31f8c784b11"
+  integrity sha1-Z/tzzTcfLZujue8lNACjH4x4SxE=
 
 wordwrap@0.0.2:
   version "0.0.2"
