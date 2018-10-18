@@ -14,9 +14,9 @@ export class BrokerService {
     this.lastPacketReceived = null // last packet Received
     this.clientId = 'ureflect_mirror_' + store.getters.getMirrorName + '_' + new Date().toISOString()
     this.options = {
-      connectTimeout: 10 * 60 * 1000,
-      // keepalive: true,
+      connectTimeout: 1500,
       clean: false,
+      keepalive: 20,
       reconnectPeriod: 1000,
       clientId: this.clientId
     }
@@ -70,7 +70,7 @@ export class BrokerService {
   listen (resolve = null, reject = null) {
     this.client.on('message', (topic, message, packet) => {
       try {
-        // console.log('received MQTT:', new TextDecoder('utf-8').decode(message))
+        console.log('received MQTT:', new TextDecoder('utf-8').decode(message))
         this.onCallbacks[topic](message, packet)
       } catch (ignored) {
       } finally {
@@ -79,6 +79,7 @@ export class BrokerService {
     })
 
     this.client.on('connect', (res) => {
+      console.log('[MQTT] event connect: received')
       if (res.returnCode === 0) {
         this.setStatus(200)
         try {
@@ -117,10 +118,6 @@ export class BrokerService {
       this.setStatus(500)
       this.stack = err
       console.log('[MQTT] event received: error', err)
-      console.log(this.client)
-      // setTimeout(() => {
-      //   this.client.reconnect()
-      // }, 1000)
     })
 
     this.client.on('packetsend', (packet) => {

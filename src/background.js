@@ -6,6 +6,10 @@ import { format as formatUrl } from 'url'
 import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+if (isDevelopment) {
+  // Don't load any native (external) modules until the following line is run:
+  require('module').globalPaths.push(process.env.NODE_MODULES_PATH)
+}
 
 const widevine = require('electron-widevinecdm')
 widevine.load(app)

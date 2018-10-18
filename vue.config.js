@@ -26,19 +26,7 @@ module.exports = {
         '%': resolve('src/views'),
         '&': resolve('src/components')
       }
-    },
-    node: {
-      fs: 'empty'
     }
-  },
-  chainWebpack: config => {
-    // GraphQL Loader
-    config.module
-      .rule('shebang-loader')
-      .test(/\.js$/)
-      .use('shebang-loader')
-      .loader('shebang-loader')
-      .end()
   }
 
 }
