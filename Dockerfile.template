@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   xserver-xorg-core \
   xserver-xorg-input-all \
   xserver-xorg-video-fbdev \
+  network-manager \
   xorg \
   libxcb-image0 \
   libxcb-util0 \
@@ -41,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libxtst-dev \
   libxss1 \
   libnss3-dev \
-  libsmbclient \
+  libsmbclient \  
   libssh-4 \
   fbset \
   libgtk-3-0 \
@@ -59,7 +60,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
   && echo "" >> /etc/X11/xinit/xserverrc \
-  && echo 'exec /usr/bin/X -s 0 dpms -nocursor -nolisten tcp "$@"' >> /etc/X11/xinit/xserverrc
+  && echo 'exec /usr/bin/X -s 0 dpms -nolisten tcp "$@"' >> /etc/X11/xinit/xserverrc
+#  && echo 'exec /usr/bin/X -s 0 dpms -nocursor -nolisten tcp "$@"' >> /etc/X11/xinit/xserverrc
 
 # Move to app dir
 WORKDIR /usr/src/app
