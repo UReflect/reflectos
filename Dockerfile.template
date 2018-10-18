@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY ./package.json ./
 
 # Install npm modules for the application
-RUN JOBS=MAX npm install --unsafe-perm  && npm cache clean --force && rm -rf /tmp/*
+# RUN JOBS=MAX npm install --unsafe-perm  && npm cache clean --force && rm -rf /tmp/*
 
 # Move app to filesystem
 COPY ./ ./
