@@ -191,18 +191,32 @@ export default {
       })
     },
     endDrag: function (e, widget) {
-      let contx = this.$refs.container.getBoundingClientRect().left
-      let conty = this.$refs.container.getBoundingClientRect().top
-      let contw = this.$refs.container.getBoundingClientRect().width
-      let conth = this.$refs.container.getBoundingClientRect().height
+      var container = this.$refs.container
+
+      let contx = container.getBoundingClientRect().left
+      let conty = container.getBoundingClientRect().top
+      let contw = container.getBoundingClientRect().width
+      let conth = container.getBoundingClientRect().height
 
       let pageX = e.touches ? widget.prevx : e.pageX
       let pageY = e.touches ? widget.prevy : e.pageY
 
       if (pageX > contx && pageX < contx + contw &&
         pageY > conty && pageY < conty + conth) {
-        // console.log(widget.el.dataset)
-        this.enable(widget.el.dataset.widgetName, widget.el.dataset.widgetInfos)
+        let scaledPageX = pageX - ((container.offsetWidth - container.getBoundingClientRect().width) / 2)
+        let scaledPageY = pageY - ((container.offsetHeight - container.getBoundingClientRect().height) / 2)
+
+        let newPosX = Math.min(18, Math.max(0, Math.round(scaledPageX / (contw / 19)) - 1))
+        let newPosY = Math.min(9, Math.max(0, Math.round(scaledPageY / (conth / 10)) - 1))
+
+        let wgtInfos = JSON.parse(widget.el.dataset.widgetInfos)
+
+        wgtInfos.posX = newPosX
+        wgtInfos.posY = newPosY
+
+        wgtInfos = JSON.stringify(wgtInfos)
+
+        this.enable(widget.el.dataset.widgetName, wgtInfos)
       }
 
       widget.el.parentNode.removeChild(widget.el)
