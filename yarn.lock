@@ -663,9 +663,9 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@drartemi/mc.js/-/mc.js-1.0.1.tgz#cbbefbbcb77f375a2055cc8101fb93d05633b892"
 
-"@drartemi/mcjs@^1.0.43":
-  version "1.0.43"
-  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.0.43.tgz#cdcc4fb56b759dcefcedec8d9b66523c3e5921d4"
+"@drartemi/mcjs@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@drartemi/mcjs/-/mcjs-1.1.0.tgz#2356d3d17a81eb705d9648db56c2beebfa3f92a1"
 
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"

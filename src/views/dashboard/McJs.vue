@@ -214,9 +214,10 @@ export default {
         wgtInfos.posX = newPosX
         wgtInfos.posY = newPosY
 
-        wgtInfos = JSON.stringify(wgtInfos)
-
-        this.enable(widget.el.dataset.widgetName, wgtInfos)
+        if (this.self.gotEmptySpace(wgtInfos.sizeX, wgtInfos.sizeY)) {
+          wgtInfos = JSON.stringify(wgtInfos)
+          this.enable(widget.el.dataset.widgetName, wgtInfos)
+        }
       }
 
       widget.el.parentNode.removeChild(widget.el)
