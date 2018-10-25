@@ -1,11 +1,12 @@
 // TO REWRITE WITH https://www.npmjs.com/package/pi-wifi
 // import WiFiControl from 'wifi-control'
 import DNS from 'dns'
-import wifi from 'node-wifi'
+// import wifi from 'node-wifi'
+import wifi from 'pi-wifi'
 
-wifi.init({
-  iface: null // network interface, choose a random wifi interface if set to null
-})
+// wifi.init({
+//   iface: null // network interface, choose a random wifi interface if set to null
+// })
 
 export class WifiService {
   constructor () {
@@ -15,23 +16,13 @@ export class WifiService {
 
   status () {
     return new Promise((resolve, reject) => {
-      wifi.getCurrentConnections((err, currentConnections) => {
-        console.log(currentConnections)
+      DNS.resolve('google.com', (err) => {
         if (err) {
+          console.debug('[reflectos][Service][WiFiControl] status::error')
           reject(err)
-        } else if (currentConnections.length === 0) {
-          console.debug('[reflectos][Service][WiFiControl] status::disconnected')
-          resolve(false)
         } else {
-          DNS.resolve('google.com', (err) => {
-            if (err) {
-              console.debug('[reflectos][Service][WiFiControl] status::error')
-              reject(err)
-            } else {
-              console.debug('[reflectos][Service][WiFiControl] status::connected')
-              resolve(true)
-            }
-          })
+          console.debug('[reflectos][Service][WiFiControl] status::connected')
+          resolve(true)
         }
       })
     })
@@ -83,7 +74,7 @@ export class WifiService {
 
   connect (ssid, password) {
     return new Promise((resolve, reject) => {
-      wifi.connect({ ssid, password }, (err) => {
+      wifi.connect(ssid, password, (err) => {
         if (err) {
           console.debug('[reflectos][Service][WiFiControl] connect::error')
           reject(err)
