@@ -1,6 +1,9 @@
 <template>
   <div class="lock">
     <h1 class="unlock-title">Unlock {{ getCurrentProfile.title }}</h1>
+    <v-btn
+      flat
+      @click="$router.push({ name: 'profiles' })">Go back</v-btn>
     <v-container
       v-if="isLockLoading"
       grid-list-md
