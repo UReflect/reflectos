@@ -1,9 +1,12 @@
+import Vue from 'vue'
 import mqtt from 'mqtt'
 import store from '@/store'
 
 export class BrokerService {
-  constructor () {
+  constructor (debug = false) {
     this.client = null
+    this.debug = debug
+    this.log(`[reflectos][Service][Broker] Initialized [${debug ? 'debug' : 'prod'} mode]`)
     this.reconnect = true
     this.onCallbacks = []
     this.onConnectCallback = () => {}
@@ -67,10 +70,16 @@ export class BrokerService {
     return this
   }
 
+  log (message) {
+    if (this.debug) {
+      Vue.notify({ type: 'info', text: message })
+    }
+    console.log(message)
+  }
+
   listen (resolve = null, reject = null) {
     this.client.on('message', (topic, message, packet) => {
       try {
-        console.log('received MQTT:', new TextDecoder('utf-8').decode(message))
         this.onCallbacks[topic](message, packet)
       } catch (ignored) {
       } finally {
@@ -79,7 +88,6 @@ export class BrokerService {
     })
 
     this.client.on('connect', (res) => {
-      console.log('[MQTT] event connect: received')
       if (res.returnCode === 0) {
         this.setStatus(200)
         try {
@@ -88,36 +96,36 @@ export class BrokerService {
         if (resolve) {
           resolve()
         }
-        console.log('[MQTT] event connect: connected')
+        this.log('[reflectos][Service][Broker] event connect: connected')
       } else {
         this.setStatus(500)
         this.stack = res
         if (reject) {
           reject(res)
         }
-        console.log('[MQTT] event connect: not connected')
+        this.log('[reflectos][Service][Broker] event connect: not connected')
       }
     })
 
     this.client.on('reconnect', () => {
       this.setStatus(300)
-      console.log('[MQTT] event received: reconnect')
+      this.log('[reflectos][Service][Broker] event received: reconnect')
     })
 
     this.client.on('offline', () => {
       this.setStatus(100)
-      console.log('[MQTT] event received: offline')
+      this.log('[reflectos][Service][Broker] event received: offline')
     })
 
     this.client.on('close', () => {
       this.setStatus(0)
-      console.log('[MQTT] event received: close')
+      this.log('[reflectos][Service][Broker] event received: close')
     })
 
     this.client.on('error', (err) => {
       this.setStatus(500)
       this.stack = err
-      console.log('[MQTT] event received: error', err)
+      this.log('[reflectos][Service][Broker] event received: error', err)
     })
 
     this.client.on('packetsend', (packet) => {
@@ -138,7 +146,7 @@ export class BrokerService {
         this.options.password = password
       }
       let url = `${process.env.VUE_APP_MQTT_SERVER_PROTOCOL}://${process.env.VUE_APP_MQTT_SERVER_HOST}:${process.env.VUE_APP_MQTT_SERVER_PORT}/${process.env.VUE_APP_MQTT_SERVER_PATH}`
-      console.log(url)
+      this.log(url)
       this.client = mqtt.connect(url, this.options)
       this.listen(resolve, reject)
     })
@@ -227,7 +235,7 @@ export class BrokerService {
 
 export default {
   install (Vue) {
-    const broker = new BrokerService()
+    const broker = new BrokerService(process.env.NODE_ENV === 'development')
     Vue.prototype.$broker = broker
     Vue.broker = broker
   }
