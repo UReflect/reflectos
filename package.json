@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@babel/polyfill": "^7.0.0-beta.49",
-    "@drartemi/mcjs": "^1.1.0",
+    "@drartemi/mcjs": "^1.4.5",
     "@vue/cli-plugin-babel": "^3.0.5",
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-plugin-unit-jest": "^3.0.5",

@@ -1,0 +1,16 @@
+{
+  "name": "Morpion",
+  "version": "1.0",
+  "author": "Adrien Milcent",
+  "entry_file": "ur-morpion.umd.min.js",
+  "css_file": "ur-morpion.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 5,
+    "sizeY": 4,
+    "minX": 5,
+    "minY": 4,
+    "resizable": true
+  }
+}
