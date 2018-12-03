@@ -1,9 +1,7 @@
-// import Vue from 'vue'
 import store from '@/store'
-// import { ipcRenderer } from 'electron'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8081/'
+const API_BASE_URL = 'http://192.168.0.48:5000/api/'
 const API_VERSION = 'v1.0/'
 
 export class FacialRecognitionService {
