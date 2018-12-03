@@ -11,11 +11,11 @@ module.exports = {
       fallbackLocale: 'en',
       localeDir: 'locales',
       enableInSFC: false
-    // },
-    // electronBuilder: {
-    //   builderOptions: {
-    //     asar: false
-    //   }
+      // },
+      // electronBuilder: {
+      //   builderOptions: {
+      //     asar: false
+      //   }
     }
   },
   configureWebpack: {
@@ -27,6 +27,14 @@ module.exports = {
         '&': resolve('src/components')
       }
     }
+  },
+  chainWebpack: config => {
+    // GraphQL Loader
+    config.module
+      .rule('shebang-loader')
+      .test(/\.js$/)
+      .use('shebang-loader')
+      .loader('shebang-loader')
+      .end()
   }
-
 }
