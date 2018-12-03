@@ -26,22 +26,34 @@ import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'Profiles',
-  computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass']),
+  computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass', 'getCurrentProfile']),
   mounted: function () {
     this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
-      this.$profileManager.bootMirror()
+      this.$profileManager.bootMirror().then((res) => {
+        if (res.user) {
+          this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title)
+        }
+      })
     })
-    // this.pushProfile({
-    //   id: 34,
-    //   title: 'debug',
-    //   modules: []
-    // })
+    this.$facial.init((err, profileId) => {
+      if (!err) {
+        this.unlock(profileId)
+      }
+    })
+  },
+  beforeDestroy: function () {
+    this.$facial.unmount()
   },
   methods: {
-    ...mapMutations(['selectProfile', 'pushProfile', 'pushProvider']),
+    ...mapMutations(['selectProfile', 'selectProfileById', 'unlockProfile', 'pushProfile', 'pushProvider']),
     choose: function (profile) {
       this.selectProfile(profile)
       this.$router.push({ name: 'lock' })
+    },
+    unlock: function (profileId) {
+      this.selectProfileById(profileId)
+      this.unlockProfile({ loading: false, locked: false, error: false })
+      this.$router.push({ name: 'dash' })
     }
   }
 }

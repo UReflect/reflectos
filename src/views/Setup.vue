@@ -147,8 +147,10 @@ export default {
       this.$broker.onConnect(() => {
         this.$profileManager.resolveMirrorInfos().then(() => {
           this.states = this.setupStates.WAITING_FOR_USER
+          this.$facial.install()
           this.$profileManager.resolveUserInfos().then(() => {
             this.states = this.setupStates.WAITING_FOR_PROFILE
+            this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title)
             this.$router.push({ name: 'dash' })
           }).catch(this.connectBroker)
         }).catch(this.connectBroker)

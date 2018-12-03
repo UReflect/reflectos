@@ -81,8 +81,10 @@ export class ProfileManagerService {
   }
 
   bootMirror () {
-    this.resolveMirrorInfos()
-    this.resolveUserInfos()
+    return new Promise(resolve => {
+      this.resolveMirrorInfos().then(() => resolve({ infos: true }))
+      this.resolveUserInfos().then(() => resolve({ user: true }))
+    })
   }
 
   resolveUserInfos () {
