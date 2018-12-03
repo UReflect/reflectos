@@ -9,6 +9,9 @@ const state = {
   broker_user: '',
   broker_password: '',
   location: '',
+  facial: {
+    initialized: false
+  },
   joined: false,
   init: false,
   active: false
@@ -38,6 +41,9 @@ const getters = {
   },
   getMirrorJoinedStatus (state) {
     return state.joined
+  },
+  isFacialRecognitionInitialized (state) {
+    return state.facial.initialized
   }
 }
 
@@ -45,6 +51,11 @@ const mutations = {
   generateSerial (state) {
     let str = () => Math.floor((1 + Math.random()) * 0x10000).toString(32).substring(1)
     state.serial = `${str()}-${str()}-${str()}-${str()}`.toUpperCase()
+  },
+  setFacialInstallation (state, installed) {
+    if (typeof installed === 'boolean') {
+      state.facial.initialized = installed
+    }
   },
   setMirror (state, payload) {
     if (payload) {

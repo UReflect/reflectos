@@ -107,7 +107,7 @@ export default {
       DISPLAY_MIRROR_NAME: 9
     }
   }),
-  computed: mapGetters(['getMirrorBrokerUser', 'getMirrorBrokerPass', 'getMirrorJoinCode']),
+  computed: mapGetters(['getMirrorBrokerUser', 'getMirrorBrokerPass', 'getMirrorJoinCode', 'getCurrentProfile']),
   mounted: function () {
     this.states = this.setupStates.INITIALIZING_MIRROR
     this.initMirror()
@@ -145,13 +145,13 @@ export default {
         this.connectBroker()
       })
       this.$broker.onConnect(() => {
-        this.$profileManager.resolveMirrorInfos().then(() => {
-          this.states = this.setupStates.WAITING_FOR_USER
-          this.$facial.install()
-          this.$profileManager.resolveUserInfos().then(() => {
-            this.states = this.setupStates.WAITING_FOR_PROFILE
-            this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title)
-            this.$router.push({ name: 'dash' })
+        this.$profileManager.resolveMirrorInfos().then(() => { // on attend que le pin soit validé
+          this.states = this.setupStates.WAITING_FOR_USER // 'WAITING FOR YOUR GLOBAL INFORMATIONS'
+          this.$facial.install() // facial init
+          this.$profileManager.resolveUserInfos().then(() => { // listen sur /user/ID pour le PROFILE_CREATE
+            this.states = this.setupStates.WAITING_FOR_PROFILE // OSEF
+            this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title) // on ajoute la face sur l'api
+            this.$router.push({ name: 'dash' }) // on redirige vers le dashboard
           }).catch(this.connectBroker)
         }).catch(this.connectBroker)
       })

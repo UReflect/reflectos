@@ -61,9 +61,7 @@ export class ProfileManagerService {
   resolveMirrorInfos () {
     return new Promise((resolve, reject) => {
       Vue.broker.on(`mirrors/${store.getters.getMirrorID}`, (message, packet) => {
-        console.log('receiving mirror')
         try {
-          console.log('here')
           console.log('message=', new TextDecoder('utf-8').decode(message))
           let data = JSON.parse(new TextDecoder('utf-8').decode(message))
           console.log('data = ', data)

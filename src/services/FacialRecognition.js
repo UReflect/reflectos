@@ -19,8 +19,10 @@ export class FacialRecognitionService {
   }
 
   addFace (profileId, profileName) {
-    return new Promise((resolve, reject) => {
-      this.http.post('face', { profile_id: profileId, name: profileName }).then(resolve).catch(reject)
+    this.http.post('face', { profile_id: profileId, name: profileName }).then((res) => {
+      console.log('facialRecognitionService::addFace success', res)
+    }).catch((err) => {
+      console.log('facialRecognitionService::addFace error', err)
     })
   }
 
