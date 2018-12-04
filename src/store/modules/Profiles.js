@@ -54,6 +54,9 @@ const mutations = {
   selectProfile (state, profile) {
     state.currentProfile = state.profiles.find(p => p.id === profile.id)
   },
+  selectProfileById (state, profileId) {
+    state.currentProfile = state.profiles.find(p => p.id === profileId)
+  },
   lockProfile (state) {
     state.locked = true
     state.loading = false

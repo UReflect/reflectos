@@ -137,6 +137,13 @@ export class BrokerService {
     })
   }
 
+  tryConnect (disconnect = false) {
+    if (disconnect) {
+      return this.end()
+    }
+    return this.connect(store.getters.getMirrorUserName, store.getters.getMirrorUserPass, false)
+  }
+
   connect (username = null, password = null, reconnect = true) {
     return new Promise((resolve, reject) => {
       this.refreshCID()
