@@ -131,6 +131,9 @@ const downloadHandler = () => {
         console.error(e)
       })
   })
+  ipcMain.on('uninstall-module', (event, id) => {
+    mainWindow.webContents.send('application-uninstall', id)
+  })
 }
 
 // const systemjs = require('systemjs/dist/system-production.js')

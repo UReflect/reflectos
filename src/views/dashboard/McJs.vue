@@ -37,6 +37,11 @@
           class="icon-lock"
           @click="lock">lock
         </v-icon>
+        <v-icon
+          :class="{ 'red--text': deleteMode }"
+          class="icon-delete"
+          @click="deleteMode = !deleteMode">delete
+        </v-icon>
       </v-layout>
     </div>
     <div
@@ -44,6 +49,8 @@
       ref="addWidget">
       <v-layout
         id="add-widgets"
+        row
+        wrap
         justify-space-around>
         <div
           v-for="app of getCurrentProfileDisabledApps"
@@ -57,8 +64,7 @@
             class="widget-item white--text">
             <v-card-title primary-title>
               <div class="headline">
-                <v-icon>mdi-application</v-icon>
-                {{ app.name }}
+                {{ app.realName || app.name }}
               </div>
             </v-card-title>
           </v-card>
@@ -90,6 +96,7 @@ export default {
       return this.getApplications.slice().reduce((apps, app) => {
         if (this.getCurrentProfile.modules && this.getCurrentProfile.modules.findIndex(m => m.name === app.name) === -1) {
           apps.push({
+            id: app.id,
             name: app.name,
             widgetInfos: JSON.stringify(app.data['widget-info']),
             realName: app.data['name']
@@ -128,6 +135,7 @@ export default {
     this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
       this.$profileManager.listenProfileInstalls(this.getCurrentProfile)
     })
+    console.log(this.getApplications)
     this.init()
     // this.$watcher.onApplication(() => {
     // })
@@ -162,6 +170,15 @@ export default {
       document.addEventListener('mouseup', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
       document.addEventListener('touchend', (e) => { MC.onTouchEnd(e, this.curWidget.curWidget, this.endDrag) })
     },
+    deleteApp: function (name) {
+      console.log('deleting', name)
+      if (this.deleteMode) {
+        let app = this.getCurrentProfileDisabledApps.filter(a => a.name === name)
+        if (app) {
+          this.$watcher.onApplicationRemove(app.id)
+        }
+      }
+    },
     onWidgetMoveEnd: function (e, widget) {
       if (widget.el && widget.el.dataset.widgetInfos && widget.el.dataset.module && widget.el.dataset.widgetInfos !== this.getModuleInfosByName(widget.el.dataset.module)) {
         this.changeModuleInfos({ name: widget.el.dataset.module, widgetInfos: widget.el.dataset.widgetInfos })
@@ -191,6 +208,11 @@ export default {
       })
     },
     endDrag: function (e, widget) {
+      if (this.deleteMode && widget.prevx === e.pageX && widget.prevy === e.pageY) {
+        this.deleteApp(widget.el.dataset.widgetName)
+        return
+      }
+
       var container = this.$refs.container
 
       let contx = container.getBoundingClientRect().left

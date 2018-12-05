@@ -53,6 +53,9 @@ export class ProfileManagerService {
         let name = data.data.name
         console.debug('[reflectos][Service][ProfileManager] listenProfile::MODULE_INSTALL', id, name, link)
         ipcRenderer.send('download-module', link)
+      } else if (data.type === 'MODULE_UNINSTALL') {
+        console.debug('[reflectos][Service][ProfileManager] listenProfile::MODULE_UNINSTALL', data.data.id)
+        ipcRenderer.send('uninstall-module', data.data.id)
       }
       console.log(data)
     } catch (ignored) {}

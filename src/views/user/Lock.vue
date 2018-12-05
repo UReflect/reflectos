@@ -98,6 +98,7 @@ export default {
   methods: {
     ...mapMutations(['lockProfile', 'unlockProfile']),
     unlock: function () {
+      console.log('unlocking user', this.getCurrentProfile.id)
       this.$broker.subscribe(`profiles/${this.getCurrentProfile.id}/verify/status`)
       this.$broker.on(`profiles/${this.getCurrentProfile.id}/verify/status`, this.pinCheck)
       this.unlockProfile({ loading: true, locked: true, error: false })
