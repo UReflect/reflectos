@@ -21,6 +21,7 @@ export class WatcherService {
     // this.watch(apps.archives)
     this.callback = () => ({})
     ipcRenderer.on('application-downloaded', this.onApplicationFound)
+    ipcRenderer.on('application-uninstall', this.onApplicationRemove)
   }
 
   onApplication (callback) {
@@ -106,27 +107,26 @@ export class WatcherService {
     })
   }
 
-  remove (name) {
-    let idx = this.applications.findIndex(a => a.name === name)
-    let app = this.applications[idx]
-    WatcherService.deleteFolderRecursive(`${apps.apps}/${app.name}.${app.version}`)
-    this.applications.splice(idx, 1)
+  onApplicationRemove (event, id) {
+    const app = store.getters.getApplicationById(id)
+    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove', app.name)
+    const path = `./${apps.apps}/${app.directory}`
+    store.commit('removeApplicationById', id)
+    WatcherService.deleteFolderRecursive(path)
+    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove removed')
   }
 
   static register (application) {
     const name = application.split('.')[0]
 
-    const app = require(`../../applications/apps/${application}/${name}.umd.min.js`)
-    require(`../../applications/apps/${application}/${name}.css`)
+    const app = require(`../../${apps.apps}/${application}/${name}.umd.min.js`)
+    require(`../../${apps.apps}/${application}/${name}.css`)
 
-    let data = fs.readFileSync(`./applications/apps/${application}/manifest.json`, 'utf8')
+    let data = fs.readFileSync(`./${apps.apps}/${application}/manifest.json`, 'utf8')
     data = JSON.parse(data)
 
     Vue.component(name, app)
-    store.commit('addApplication', { name, data })
-    // try {
-    // this.callback()
-    // } catch (ignore) {}
+    store.commit('addApplication', { name, directory: application, data })
   }
 }
 
