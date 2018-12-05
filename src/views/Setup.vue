@@ -146,10 +146,9 @@ export default {
       })
       this.$broker.onConnect(() => {
         this.$profileManager.resolveMirrorInfos().then(() => { // on attend que le pin soit validé
-          this.states = this.setupStates.WAITING_FOR_USER // 'WAITING FOR YOUR GLOBAL INFORMATIONS'
+          this.states = this.setupStates.WAITING_FOR_PROFILE // 'WAITING FOR YOUR FIRST PROFILE'
           this.$facial.install() // facial init
           this.$profileManager.resolveUserInfos().then(() => { // listen sur /user/ID pour le PROFILE_CREATE
-            this.states = this.setupStates.WAITING_FOR_PROFILE // OSEF
             this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title) // on ajoute la face sur l'api
             this.$router.push({ name: 'dash' }) // on redirige vers le dashboard
           }).catch(this.connectBroker)
