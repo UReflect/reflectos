@@ -13,10 +13,14 @@
         v-for="(app, index) of getCurrentProfileEnabledApps"
         v-show="!load"
         :key="'app-' + index"
-        :is="app.name"
         :data-module="app.name"
         :data-widget-infos="app.widgetInfos"
-        class="widget"/>
+        class="widget">
+        <div
+          :is="app.name"
+          class="widget-content"
+        />
+      </div>
       <div
         v-if="getCurrentProfileEnabledApps.length === 0 || load"
         class="messages"
@@ -293,8 +297,10 @@ export default {
     height: 75vh !important;
   }
 
-  .widget {
+  .widget-content {
     overflow: hidden;
+    height: 100%;
+    width: 100%;
   }
 
   #widget-container {
