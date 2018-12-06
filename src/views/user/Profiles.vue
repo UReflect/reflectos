@@ -26,7 +26,7 @@ import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'Profiles',
-  computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass', 'getCurrentProfile']),
+  computed: mapGetters(['getProfiles', 'getMirrorBrokerUser', 'getMirrorBrokerPass', 'getCurrentProfile', 'getProfileById']),
   mounted: function () {
     this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
       this.$profileManager.bootMirror().then((res) => {
@@ -37,7 +37,9 @@ export default {
     })
     this.$facial.init((err, profileId) => {
       if (!err) {
-        this.unlock(profileId)
+        if (this.getProfileById(profileId)) {
+          this.unlock(profileId)
+        }
       }
     })
   },

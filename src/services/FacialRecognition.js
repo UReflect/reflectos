@@ -53,13 +53,13 @@ export class FacialRecognitionService {
 
   startFetching () {
     if (!this.mounted) return
-    this.interval = setInterval(() => {
-      this.fetchFace().then((profileId) => {
-        this.callback(false, profileId)
-      }).catch((err) => {
-        this.callback({ type: err.message })
-      })
-    }, 5000)
+    this.fetchFace().then((profileId) => {
+      this.callback(false, profileId)
+    }).catch((err) => {
+      this.callback({ type: err.message })
+    }).then(() => {
+      this.startFetching()
+    })
   }
 
   unmount () {
