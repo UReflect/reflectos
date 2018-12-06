@@ -26,7 +26,7 @@
         class="messages"
         data-widget-infos="{&quot;posX&quot;: 1, &quot;posY&quot;: 1, &quot;sizeX&quot;: 1, &quot;sizeY&quot;: 1}">
         <h3 v-if="load">Refreshing...</h3>
-        <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">No modules enabled. Pinch out to edit</h3>
+        <h3 v-else-if="getCurrentProfileEnabledApps.length === 0">Pinch in to create</h3>
       </div>
     </div>
     <div
@@ -425,12 +425,11 @@ export default {
 
   #widget-container > .messages {
     display: flex;
-    /*width: 100vw !important;*/
-    /*height: 80vh !important;*/
+    width: 100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    /*left: 0!important;*/
   }
 
   #widget-container > .messages h3 {

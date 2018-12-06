@@ -116,20 +116,35 @@ if (isDevelopment) {
   ])
 }
 
-const { download } = require('electron-dl')
+// const { download } = require('electron-dl')
+const DownloadManager = require('electron-download-manager')
+DownloadManager.register({
+  downloadFolder: path.join(__dirname, '../applications/archives')
+})
 
 const downloadHandler = () => {
   ipcMain.on('download-module', (event, url) => {
     let uri = decodeURIComponent(url)
     console.log(uri)
-    download(BrowserWindow.getFocusedWindow(), uri, { directory: './applications/archives' })
-      .then(dl => {
-        console.log(dl.getSavePath())
-        mainWindow.webContents.send('application-downloaded', dl.getSavePath())
-      })
-      .catch(e => {
-        console.error(e)
-      })
+
+    DownloadManager.download({
+      url: uri
+    }, function (error, info) {
+      if (error) {
+        console.log(error)
+        return
+      }
+      mainWindow.webContents.send('application-downloaded', info.filePath)
+      console.log('DONE: ' + info.filePath)
+    })
+    // download(BrowserWindow.getFocusedWindow(), uri, { directory: './applications/archives' })
+    //   .then(dl => {
+    //     console.log(dl.getSavePath())
+    //     mainWindow.webContents.send('application-downloaded', dl.getSavePath())
+    //   })
+    //   .catch(e => {
+    //     console.error(e)
+    //   })
   })
   ipcMain.on('uninstall-module', (event, id) => {
     mainWindow.webContents.send('application-uninstall', id)
