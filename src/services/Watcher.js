@@ -131,9 +131,7 @@ export class WatcherService {
     // require(`/usr/src/app/${apps.apps}/${application}/${name}.css`)
     const app = require(`../../${apps.apps}/${application}/${name}.umd.min.js`)
     require(`../../${apps.apps}/${application}/${name}.css`)
-
-    let data = fs.readFileSync(`./${apps.apps}/${application}/manifest.json`, 'utf8')
-    data = JSON.parse(data)
+    const data = require(`../../${apps.apps}/${application}/manifest.json`)
 
     Vue.component(name, app)
     store.commit('addApplication', { name, directory: application, data })
