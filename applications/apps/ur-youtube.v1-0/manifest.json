@@ -1,0 +1,14 @@
+{
+  "name": "Youtube",
+  "version": "1.0",
+  "author": "Aurelien Arino",
+  "entry_file": "ur-youtube.umd.min.js",
+  "css_file": "ur-youtube.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 7,
+    "sizeY": 4,
+    "resizable": false
+  }
+}

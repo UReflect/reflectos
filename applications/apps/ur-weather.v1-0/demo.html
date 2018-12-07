@@ -1,0 +1,17 @@
+<meta charset="utf-8">
+<title>ur-weather demo</title>
+<script src="https://unpkg.com/vue"></script>
+<script src="./ur-weather.umd.js"></script>
+<link rel="stylesheet" href="./ur-weather.css">
+
+<div id="app">
+  <demo></demo>
+</div>
+
+<script>
+new Vue({
+  components: {
+    demo: ur-weather
+  }
+}).$mount('#app')
+</script>

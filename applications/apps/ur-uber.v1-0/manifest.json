@@ -1,0 +1,14 @@
+{
+  "name": "Uber",
+  "version": "1.0",
+  "author": "Jean Barriere",
+  "entry_file": "ur-uber.umd.min.js",
+  "css_file": "ur-uber.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 4,
+    "sizeY": 4,
+    "resizable": true
+  }
+}

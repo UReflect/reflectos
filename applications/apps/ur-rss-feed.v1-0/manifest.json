@@ -1,0 +1,14 @@
+{
+  "name": "Rss Feed",
+  "version": "1.0",
+  "author": "Alban Combaud",
+  "entry_file": "ur-rss-feed.umd.min.js",
+  "css_file": "ur-rss-feed.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 4,
+    "sizeY": 4,
+    "resizable": true
+  }
+}

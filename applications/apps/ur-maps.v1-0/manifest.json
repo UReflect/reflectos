@@ -1,0 +1,14 @@
+{
+  "name": "Maps",
+  "version": "1.0",
+  "author": "Louis Gilbert",
+  "entry_file": "ur-maps.umd.min.js",
+  "css_file": "ur-maps.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 6,
+    "sizeY": 3,
+    "resizable": true
+  }
+}

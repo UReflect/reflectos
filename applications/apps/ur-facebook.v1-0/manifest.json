@@ -1,0 +1,14 @@
+{
+  "name": "Facebook",
+  "version": "1.0",
+  "author": "Louis Gilbert",
+  "entry_file": "ur-facebook.umd.min.js",
+  "css_file": "ur-facebook.css",
+  "widget-info": {
+    "posX": 1,
+    "posY": 1,
+    "sizeX": 4,
+    "sizeY": 3,
+    "resizable": true
+  }
+}
