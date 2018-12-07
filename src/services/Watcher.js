@@ -107,13 +107,15 @@ export class WatcherService {
     })
   }
 
-  onApplicationRemove (event, id) {
-    const app = store.getters.getApplicationById(id)
-    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove', app.name)
-    const path = `./${apps.apps}/${app.directory}`
-    store.commit('removeApplicationById', id)
-    WatcherService.deleteFolderRecursive(path)
-    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove removed')
+  onApplicationRemove (event, name) {
+    const app = store.getters.getApplicationByName(name)
+    console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove', app ? app.name : 'app not found')
+    if (app) {
+      const path = `./${apps.apps}/${app.directory}`
+      store.commit('removeApplicationById', name)
+      WatcherService.deleteFolderRecursive(path)
+      console.debug('reflectos][Service][Watcher] WatcherService::onApplicationRemove removed')
+    }
   }
 
   static register (application) {

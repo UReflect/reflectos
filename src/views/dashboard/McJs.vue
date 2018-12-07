@@ -135,6 +135,9 @@ export default {
       console.log(newValue)
     }
   },
+  beforeDestroy: function () {
+    this.$profileManager.unlistenProfileInstalls(this.getCurrentProfile)
+  },
   mounted: function () {
     this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
       this.$profileManager.listenProfileInstalls(this.getCurrentProfile)
@@ -177,10 +180,7 @@ export default {
     deleteApp: function (name) {
       console.log('deleting', name)
       if (this.deleteMode) {
-        let app = this.getCurrentProfileDisabledApps.filter(a => a.name === name)
-        if (app) {
-          this.$watcher.onApplicationRemove(app.id)
-        }
+        this.$watcher.onApplicationRemove(null, name)
       }
     },
     onWidgetMoveEnd: function (e, widget) {

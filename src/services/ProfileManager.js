@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import store from '@/store'
+import router from '@/router'
 import { ipcRenderer } from 'electron'
 
 export class ProfileManagerService {
@@ -7,29 +8,9 @@ export class ProfileManagerService {
     console.log('profileManager created')
   }
 
-  unlock (code) {
-    console.log('unlocking', code)
-    console.log('subscribing to', `/profiles/${store.getters.getCurrentProfile.id}/verify/status`)
-    Vue.broker.on(`profiles/${store.getters.getCurrentProfile.id}/verify/status`, ProfileManagerService.pinCheck)
-    Vue.broker.subscribe(`/profiles/${store.getters.getCurrentProfile.id}/verify/status`, null, (err, granted) => {
-      console.log('hello', err, granted)
-      store.commit('unlockProfile', { loading: true, locked: true, error: false })
-      Vue.broker.publish(`pinVerify`, `{"type":"PIN_CHECK","data":{"pin":"${code}","profileID":${store.getters.getCurrentProfile.id}}}`).then(() => {
-        console.log('published')
-      }).catch((err) => {
-        console.log('error publishing', err)
-      })
-    })
-  }
-
-  static pinCheck (message, packet) {
-    try {
-      let data = JSON.parse(new TextDecoder('utf-8').decode(message))
-      store.commit('unlockProfile', { loading: false, locked: !data.success, error: !data.success })
-    } catch (e) {
-      console.log(e)
-      store.commit('unlockProfile', { loading: false, locked: true, error: true })
-    }
+  unlistenProfileInstalls (profile) {
+    console.debug('[reflectos][Service][ProfileManager] unlistenProfile', profile.id, profile.title)
+    Vue.broker.unsubscribe(`profiles/${profile.id}`)
   }
 
   listenProfileInstalls (profile) {
@@ -55,7 +36,7 @@ export class ProfileManagerService {
         ipcRenderer.send('download-module', link)
       } else if (data.type === 'MODULE_UNINSTALL') {
         console.debug('[reflectos][Service][ProfileManager] listenProfile::MODULE_UNINSTALL', data.data.id)
-        ipcRenderer.send('uninstall-module', data.data.id)
+        ipcRenderer.send('uninstall-module', data.data.name)
       }
       console.log(data)
     } catch (ignored) {}
@@ -65,9 +46,9 @@ export class ProfileManagerService {
     return new Promise((resolve, reject) => {
       Vue.broker.on(`mirrors/${store.getters.getMirrorID}`, (message, packet) => {
         try {
-          console.log('message=', new TextDecoder('utf-8').decode(message))
-          let data = JSON.parse(new TextDecoder('utf-8').decode(message))
-          console.log('data = ', data)
+          // console.log('message=', new TextDecoder('utf-8').decode(message))
+          const data = JSON.parse(new TextDecoder('utf-8').decode(message))
+          // console.log('data = ', data)
           if (data.type === 'MIRROR_JOIN') {
             store.commit('setMirror', { ...data.data, joined: true, active: true })
           }
@@ -83,6 +64,8 @@ export class ProfileManagerService {
 
   bootMirror () {
     return new Promise(resolve => {
+      Vue.broker.unsubscribe(`mirrors/${store.getters.getMirrorID}`)
+      Vue.broker.unsubscribe(`users/${store.getters.getMirrorUserID}`)
       this.resolveMirrorInfos().then(() => resolve({ infos: true }))
       this.resolveUserInfos().then(() => resolve({ user: true }))
     })
@@ -96,10 +79,20 @@ export class ProfileManagerService {
           let data = JSON.parse(new TextDecoder('utf-8').decode(message))
           if (data.type === 'PROFILE_CREATE') {
             store.commit('pushProfile', { ...data.data, modules: [] })
-            store.commit('selectProfile', data.data)
+            Vue.facial.addFace(data.data.id, data.data.title)
+          } else if (data.type === 'PROFILE_DELETE') {
+            console.log('deleting profile from data with id', data.data.id)
+            if (store.getters.getCurrentProfile.id === data.data.id) {
+              store.commit('lockProfile')
+              store.commit('deleteProfile', data.data.id)
+              router.push({ name: 'profiles' })
+            } else {
+              store.commit('deleteProfile', data.data.id)
+            }
+            console.log('deleted')
           }
           this.listenProfileInstalls(data.data)
-          resolve()
+          resolve(data.data)
         } catch (e) {
           reject(e)
         }

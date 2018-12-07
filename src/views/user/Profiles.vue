@@ -30,9 +30,6 @@ export default {
   mounted: function () {
     this.$broker.connect(this.getMirrorBrokerUser, this.getMirrorBrokerPass).then(() => {
       this.$profileManager.bootMirror().then((res) => {
-        if (res.user) {
-          this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title)
-        }
       })
     })
     this.$facial.init((err, profileId) => {

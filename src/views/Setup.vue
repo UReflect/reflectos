@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 
 export default {
   name: 'Setup',
@@ -124,6 +124,7 @@ export default {
   },
   methods: {
     ...mapActions(['init', 'redirect']),
+    ...mapMutations(['selectProfile']),
     initMirror: function () {
       this.init().then(this.connectBroker).catch(() => {
         this.initMirror()
@@ -148,8 +149,8 @@ export default {
         this.$profileManager.resolveMirrorInfos().then(() => { // on attend que le pin soit validé
           this.states = this.setupStates.WAITING_FOR_PROFILE // 'WAITING FOR YOUR FIRST PROFILE'
           this.$facial.install() // facial init
-          this.$profileManager.resolveUserInfos().then(() => { // listen sur /user/ID pour le PROFILE_CREATE
-            this.$facial.addFace(this.getCurrentProfile.id, this.getCurrentProfile.title) // on ajoute la face sur l'api
+          this.$profileManager.resolveUserInfos().then((profile) => { // listen sur /user/ID pour le PROFILE_CREATE
+            this.selectProfile(profile)
             this.$router.push({ name: 'dash' }) // on redirige vers le dashboard
           }).catch(this.connectBroker)
         }).catch(this.connectBroker)

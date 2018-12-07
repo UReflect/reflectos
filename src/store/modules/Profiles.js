@@ -57,6 +57,12 @@ const mutations = {
   selectProfileById (state, profileId) {
     state.currentProfile = state.profiles.find(p => p.id === profileId)
   },
+  deleteProfile (state, id) {
+    const profile = state.profiles.findIndex(p => p.id === id)
+    if (profile !== -1) {
+      state.profiles.splice(profile, 1)
+    }
+  },
   lockProfile (state) {
     state.locked = true
     state.loading = false

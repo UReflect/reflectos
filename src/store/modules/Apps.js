@@ -8,6 +8,9 @@ const getters = {
   },
   getApplicationById: state => id => {
     return state.applications.find(a => a.id === id)
+  },
+  getApplicationByName: state => name => {
+    return state.applications.find(a => a.name === name)
   }
 }
 
@@ -17,9 +20,9 @@ const mutations = {
       state.applications.push(payload)
     }
   },
-  removeApplicationById (state, id) {
-    let appId = state.applications.findIndex(a => a.id === (id || -1))
-    if (appId) {
+  removeApplicationByName (state, name) {
+    let appId = state.applications.findIndex(a => a.name === (name || undefined))
+    if (appId !== -1) {
       state.applications.splice(appId, 1)
     }
   }
