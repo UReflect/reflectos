@@ -126,10 +126,13 @@ export class WatcherService {
 
   static register (application) {
     const name = application.split('.')[0]
-    const app = require(`/usr/src/app/${apps.apps}/${application}/${name}.umd.min.js`)
-    require(`/usr/src/app/${apps.apps}/${application}/${name}.css`)
 
-    let data = fs.readFileSync(`/usr/src/app/${apps.apps}/${application}/manifest.json`, 'utf8')
+    // const app = require(`/usr/src/app/${apps.apps}/${application}/${name}.umd.min.js`)
+    // require(`/usr/src/app/${apps.apps}/${application}/${name}.css`)
+    const app = require(`../../${apps.apps}/${application}/${name}.umd.min.js`)
+    require(`../../${apps.apps}/${application}/${name}.css`)
+
+    let data = fs.readFileSync(`./${apps.apps}/${application}/manifest.json`, 'utf8')
     data = JSON.parse(data)
 
     Vue.component(name, app)
