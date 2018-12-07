@@ -69,24 +69,30 @@ export class WatcherService {
       // }
       if (isNew) {
         fs.createReadStream(path).pipe(unzip.Parse()).on('entry', entry => {
-          console.log('getting entry', entry)
-          if (entry.path.indexOf(zipName) === -1 && entry.path.indexOf('__MACOSX') === -1) {
-            try {
-              throw new Error(`Unable to unzip ${zipName}. There are more than one folder at the root`)
-            } catch (e) {
-              console.debug('[reflectos][Service][Watcher] WatcherService::exception', e)
-            }
-          } else {
-            if (entry.path && entry.type && entry.path === zipName + '/manifest.json' && entry.type === 'File') {
-              fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
-                fs.unlinkSync(path)
-                WatcherService.register(zipName)
-              }, (e) => {
-                console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
-              })
-              // WatcherService.deleteFolderRecursive(apps.apps + '/__MACOSX')
-            }
-          }
+          // console.log('getting entry', entry)
+          fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
+            fs.unlinkSync(path)
+            WatcherService.register(zipName)
+          }, (e) => {
+            console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
+          })
+          // if (entry.path.indexOf(zipName) === -1 && entry.path.indexOf('__MACOSX') === -1) {
+          //   try {
+          //     throw new Error(`Unable to unzip ${zipName}. There are more than one folder at the root`)
+          //   } catch (e) {
+          //     console.debug('[reflectos][Service][Watcher] WatcherService::exception', e)
+          //   }
+          // } else {
+          //   if (entry.path && entry.type && entry.path === zipName + '/manifest.json' && entry.type === 'File') {
+          //     fs.createReadStream(path).pipe(unzip.Extract({ path: apps.apps })).promise().then(() => {
+          //       fs.unlinkSync(path)
+          //       WatcherService.register(zipName)
+          //     }, (e) => {
+          //       console.error('[reflectos][Service][Watcher] WatcherService::exception::unzip', e)
+          //     })
+          //     // WatcherService.deleteFolderRecursive(apps.apps + '/__MACOSX')
+          //   }
+          // }
         })
         // TODO: Delete __MACOSX folder
         // TODO: Application name (from manifest) on dashboard
